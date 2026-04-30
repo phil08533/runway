@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-const DB_HOST = '127.0.0.1';
-const DB_NAME = 'futureworth';
-const DB_USER = 'phil';
-const DB_PASS = 'phil';
+const DB_HOST = $_ENV['DB_HOST'] ?? '127.0.0.1';
+const DB_NAME = $_ENV['DB_NAME'] ?? 'futureworth';
+const DB_USER = $_ENV['DB_USER'] ?? 'phil';
+const DB_PASS = $_ENV['DB_PASS'] ?? 'phil';
 
 function db(): PDO
 {
