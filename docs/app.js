@@ -36,9 +36,9 @@ function money(value) {
 
 function calculateMonthlyValue(amount, frequency) {
   switch (frequency) {
-    case 'daily': return amount * 30.44;
-    case 'weekly': return amount * 4.33;
-    case 'bi-weekly': return amount * 2.167;
+    case 'daily': return amount * 30.4375;
+    case 'weekly': return amount * 4.333333;
+    case 'bi-weekly': return amount * 2.166667;
     case 'monthly': return amount;
     case 'yearly': return amount / 12;
     case 'one-time': return 0;
@@ -75,6 +75,11 @@ function loadDashboard() {
   $('#expenseTotal').textContent = money(expenseTotal);
   $('#savingsTotal').textContent = money(savingsTotal);
   $('#yearlyTotal').textContent = money(yearlyTotal);
+
+  const annualExpenses = expenseTotal * 12;
+  if ($('#annualExpenseTotal')) {
+    $('#annualExpenseTotal').textContent = money(annualExpenses);
+  }
 
   loadIncomeList();
   loadExpenseList();
@@ -322,7 +327,7 @@ $('#savingsGoalForm')?.addEventListener('submit', (e) => {
     id: Date.now(),
     name: form.get('goal_name'),
     amount: parseFloat(form.get('amount')) || 0,
-    gain: form.get('hasGain') === 'on' ? (parseFloat(form.get('gain')) || 0) : 0
+    gain: form.get('hasGain') ? (parseFloat(form.get('gain')) || 0) : 0
   });
   DB.saveSavingsGoals(goals);
   e.target.reset();
