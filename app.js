@@ -102,10 +102,16 @@ async function loadDashboard() {
   $('#expenseTotal').textContent = money(data.summary.expense_total);
   $('#savingsTotal').textContent = money(data.summary.savings_total);
 
-  // Calculate yearly savings
+  // Calculate yearly values
   const monthlySavings = data.summary.savings_total;
   const yearlySavings = monthlySavings * 12;
   $('#yearlyTotal').textContent = money(yearlySavings);
+
+  // Calculate and display annual expenses
+  const annualExpenses = data.summary.expense_total * 12;
+  if ($('#annualExpenseTotal')) {
+    $('#annualExpenseTotal').textContent = money(annualExpenses);
+  }
 
   // Load savings goals
   loadSavingsGoals();
@@ -339,7 +345,7 @@ $('#savingsGoalForm').addEventListener('submit', async (e) => {
       id: Date.now(),
       name: data.goal_name,
       amount: parseFloat(data.amount) || 0,
-      gain: data.hasGain === 'on' ? (parseFloat(data.gain) || 0) : 0
+      gain: data.hasGain ? (parseFloat(data.gain) || 0) : 0
     };
 
     let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');

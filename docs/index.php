@@ -76,7 +76,7 @@ if (!isset($_SESSION['user_id'])) {
     }
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 15px;
       margin-bottom: 20px;
     }
@@ -152,6 +152,7 @@ if (!isset($_SESSION['user_id'])) {
           <h3>Monthly Expenses</h3>
           <p id="expenseTotal">$0.00</p>
           <small>Total spending</small>
+          <small style="color: #999; display: block; margin-top: 8px;">Annual: <span id="annualExpenseTotal">$0.00</span></small>
         </article>
         <article class="card highlight-card">
           <h3>Monthly Income After Expenses</h3>
