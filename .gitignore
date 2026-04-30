@@ -38,3 +38,6 @@ composer.lock
 # OS temporary files
 *.tmp
 *.temp
+
+# Database config with credentials (use environment variables instead)
+db.php
