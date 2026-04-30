@@ -17,7 +17,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, #0a5fb5 0%, #0a246a 100%);
+      background: linear-gradient(135deg, var(--xp-gradient-start) 0%, var(--xp-gradient-end) 100%);
       color: white;
       padding: 20px 30px;
       border-radius: 0;
@@ -69,9 +69,19 @@
     }
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
       margin-bottom: 20px;
+    }
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
     }
     @media (min-width: 1200px) {
       .dashboard-grid {
@@ -119,11 +129,14 @@
     <div class="header-right">
       <select id="themeSelect" onchange="changeTheme(this.value)">
         <option value="blue">Blue</option>
+        <option value="mint">Mint</option>
         <option value="sunset">Sunset</option>
         <option value="ocean">Ocean</option>
         <option value="purple">Purple</option>
         <option value="forest">Forest</option>
         <option value="rose">Rose</option>
+        <option value="slate">Slate</option>
+        <option value="indigo">Indigo</option>
         <option value="dark">Dark</option>
       </select>
       <button class="logout-btn" style="background: #4CAF50; cursor: pointer;" onclick="downloadData()">Save Data</button>
@@ -138,6 +151,11 @@
       <h2>Financial Overview <span class="help-icon" title="Complete summary of your income, expenses, and savings">?</span></h2>
       <div class="dashboard-grid">
         <article class="card">
+          <h3>Monthly Income After Expenses</h3>
+          <p id="savingsTotal">$0.00</p>
+          <small>Income minus expenses</small>
+        </article>
+        <article class="card">
           <h3>Monthly Income</h3>
           <p id="incomeTotal">$0.00</p>
           <small>All income sources</small>
@@ -146,27 +164,22 @@
           <h3>Monthly Expenses</h3>
           <p id="expenseTotal">$0.00</p>
           <small>Total spending</small>
-          <small style="color: #999; display: block; margin-top: 8px;">Annual: <span id="annualExpenseTotal">$0.00</span></small>
+          <small style="display: block; margin-top: 8px; color: rgba(255,255,255,0.85);">Annual: <span id="annualExpenseTotal">$0.00</span></small>
         </article>
-        <article class="card highlight-card">
-          <h3>Monthly Income After Expenses</h3>
-          <p id="savingsTotal">$0.00</p>
-          <small>Income minus expenses</small>
-        </article>
-        <article class="card highlight-card">
+        <article class="card">
           <h3>Annual Income</h3>
           <p id="yearlyTotal">$0.00</p>
           <small>Yearly total</small>
         </article>
         <article class="card">
-          <h3>Total Monthly Savings Goals</h3>
-          <p id="overviewMonthlySavings">$0.00</p>
-          <small>All savings goals</small>
-        </article>
-        <article class="card highlight-card">
           <h3>Annual Savings</h3>
           <p id="overviewAnnualSavings">$0.00</p>
           <small>Yearly savings with gains</small>
+        </article>
+        <article class="card">
+          <h3>Total Monthly Savings Goals</h3>
+          <p id="overviewMonthlySavings">$0.00</p>
+          <small>All savings goals</small>
         </article>
       </div>
 
