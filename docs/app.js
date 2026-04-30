@@ -37,7 +37,7 @@ function calculateRunway() {
   const months = Math.floor(savings / monthlyExpenses);
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
-  const weeks = Math.floor((savings % monthlyExpenses) / (monthlyExpenses / 4.33));
+  const weeks = Math.floor((savings % monthlyExpenses) / (monthlyExpenses / 4.333333));
 
   let timeText = '';
   if (years > 0) {
@@ -45,7 +45,7 @@ function calculateRunway() {
   } else if (months > 0) {
     timeText = `${months} month${months !== 1 ? 's' : ''} and ${weeks} week${weeks !== 1 ? 's' : ''}`;
   } else {
-    const days = Math.floor((savings / monthlyExpenses) * 30);
+    const days = Math.floor((savings / monthlyExpenses) * 30.4375);
     timeText = `${days} day${days !== 1 ? 's' : ''}`;
   }
 
@@ -76,8 +76,8 @@ function money(value) {
 
 function calculateMonthlyValue(amount, frequency) {
   switch (frequency) {
-    case 'daily': return amount * 30.44;
-    case 'weekly': return amount * 4.33;
+    case 'daily': return amount * 30.4375;
+    case 'weekly': return amount * 4.333333;
     case 'bi-weekly': return amount * 2.166667;
     case 'monthly': return amount;
     case 'yearly': return amount / 12;
