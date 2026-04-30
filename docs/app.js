@@ -78,7 +78,7 @@ function calculateMonthlyValue(amount, frequency) {
   switch (frequency) {
     case 'daily': return amount * 30.44;
     case 'weekly': return amount * 4.33;
-    case 'bi-weekly': return amount * 2.167;
+    case 'bi-weekly': return amount * 2.166667;
     case 'monthly': return amount;
     case 'yearly': return amount / 12;
     case 'one-time': return 0;
