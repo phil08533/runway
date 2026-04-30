@@ -89,6 +89,45 @@
   --xp-gradient-end: #3b82f6;
 }
 
+/* Mint Gradient Theme */
+:root[data-theme="mint"] {
+  --xp-bg: #e0f9f7;
+  --xp-panel: #f0ffff;
+  --xp-text: #0d7377;
+  --xp-border: #5dde95;
+  --xp-border-light: #c8f7dc;
+  --xp-accent: #14b8a6;
+  --xp-accent-light: #2dd4bf;
+  --xp-gradient-start: #0d7377;
+  --xp-gradient-end: #14b8a6;
+}
+
+/* Slate Gradient Theme */
+:root[data-theme="slate"] {
+  --xp-bg: #f1f5f9;
+  --xp-panel: #f8fafc;
+  --xp-text: #1e293b;
+  --xp-border: #cbd5e1;
+  --xp-border-light: #e2e8f0;
+  --xp-accent: #64748b;
+  --xp-accent-light: #94a3b8;
+  --xp-gradient-start: #334155;
+  --xp-gradient-end: #64748b;
+}
+
+/* Indigo Gradient Theme */
+:root[data-theme="indigo"] {
+  --xp-bg: #e0e7ff;
+  --xp-panel: #eef2ff;
+  --xp-text: #312e81;
+  --xp-border: #a5b4fc;
+  --xp-border-light: #ddd6fe;
+  --xp-accent: #4f46e5;
+  --xp-accent-light: #818cf8;
+  --xp-gradient-start: #3730a3;
+  --xp-gradient-end: #4f46e5;
+}
+
 /* Default fallback */
 :root {
   --xp-bg: #e3f2fd;

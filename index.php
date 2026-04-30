@@ -10,7 +10,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, #0a5fb5 0%, #0a246a 100%);
+      background: linear-gradient(135deg, var(--xp-gradient-start) 0%, var(--xp-gradient-end) 100%);
       color: white;
       padding: 20px 30px;
       border-radius: 0;
@@ -112,11 +112,14 @@
     <div class="header-right">
       <select id="themeSelect" onchange="changeTheme(this.value)">
         <option value="blue">Blue</option>
+        <option value="mint">Mint</option>
         <option value="sunset">Sunset</option>
         <option value="ocean">Ocean</option>
         <option value="purple">Purple</option>
         <option value="forest">Forest</option>
         <option value="rose">Rose</option>
+        <option value="slate">Slate</option>
+        <option value="indigo">Indigo</option>
         <option value="dark">Dark</option>
       </select>
       <button class="logout-btn" style="background: #4CAF50; cursor: pointer;" onclick="downloadData()">Save Data</button>
