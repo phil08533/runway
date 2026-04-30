@@ -1,10 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
-?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -133,8 +126,9 @@ if (!isset($_SESSION['user_id'])) {
         <option value="rose">Rose</option>
         <option value="dark">Dark</option>
       </select>
-      <span class="user-greeting">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <button class="logout-btn" style="background: #4CAF50; cursor: pointer;" onclick="downloadData()">Save Data</button>
+      <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(event)" accept=".json" />
+      <button class="logout-btn" style="background: #2196F3; cursor: pointer;" onclick="document.getElementById('fileInput').click()">Load Data</button>
     </div>
   </div>
 
