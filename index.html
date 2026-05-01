@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0a5fb5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -17,7 +17,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, var(--xp-gradient-start) 0%, var(--xp-gradient-end) 100%);
+      background: linear-gradient(135deg, #0a5fb5 0%, #0a246a 100%);
       color: white;
       padding: 20px 30px;
       border-radius: 0;
@@ -37,27 +37,10 @@
     }
     .header-right {
       display: flex;
-      gap: 15px;
+      gap: 10px;
       align-items: center;
-    }
-    .user-greeting {
-      color: white;
-      font-size: 0.9rem;
-    }
-    .logout-btn {
-      background: #cc3333;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-    .logout-btn:hover {
-      background: #bb2222;
-      transform: translateY(-1px);
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     #themeSelect {
       padding: 6px 12px;
@@ -67,21 +50,25 @@
       cursor: pointer;
       font-weight: 600;
     }
+    .file-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .file-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
       margin-bottom: 20px;
-    }
-    @media (max-width: 1024px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    @media (max-width: 640px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
     }
     @media (min-width: 1200px) {
       .dashboard-grid {
@@ -114,6 +101,9 @@
     .tab-content.active {
       display: block;
     }
+    #fileInput {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -129,19 +119,16 @@
     <div class="header-right">
       <select id="themeSelect" onchange="changeTheme(this.value)">
         <option value="blue">Blue</option>
-        <option value="mint">Mint</option>
         <option value="sunset">Sunset</option>
         <option value="ocean">Ocean</option>
         <option value="purple">Purple</option>
         <option value="forest">Forest</option>
         <option value="rose">Rose</option>
-        <option value="slate">Slate</option>
-        <option value="indigo">Indigo</option>
         <option value="dark">Dark</option>
       </select>
-      <button class="logout-btn" style="background: #4CAF50; cursor: pointer;" onclick="downloadData()">Save Data</button>
-      <input type="file" id="fileInput" style="display: none;" onchange="handleFileUpload(event)" accept=".json" />
-      <button class="logout-btn" style="background: #2196F3; cursor: pointer;" onclick="document.getElementById('fileInput').click()">Load Data</button>
+      <button class="file-btn" onclick="document.getElementById('fileInput').click()">📂 Load File</button>
+      <button class="file-btn" onclick="downloadData()">💾 Download Data</button>
+      <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)" />
     </div>
   </div>
 
@@ -151,11 +138,6 @@
       <h2>Financial Overview <span class="help-icon" title="Complete summary of your income, expenses, and savings">?</span></h2>
       <div class="dashboard-grid">
         <article class="card">
-          <h3>Monthly Income After Expenses</h3>
-          <p id="savingsTotal">$0.00</p>
-          <small>Income minus expenses</small>
-        </article>
-        <article class="card">
           <h3>Monthly Income</h3>
           <p id="incomeTotal">$0.00</p>
           <small>All income sources</small>
@@ -164,25 +146,28 @@
           <h3>Monthly Expenses</h3>
           <p id="expenseTotal">$0.00</p>
           <small>Total spending</small>
-          <small style="display: block; margin-top: 8px; color: rgba(255,255,255,0.85);">Annual: <span id="annualExpenseTotal">$0.00</span></small>
         </article>
-        <article class="card">
+        <article class="card highlight-card">
+          <h3>Monthly Income After Expenses</h3>
+          <p id="savingsTotal">$0.00</p>
+          <small>Income minus expenses</small>
+        </article>
+        <article class="card highlight-card">
           <h3>Annual Income</h3>
           <p id="yearlyTotal">$0.00</p>
           <small>Yearly total</small>
-        </article>
-        <article class="card">
-          <h3>Annual Savings</h3>
-          <p id="overviewAnnualSavings">$0.00</p>
-          <small>Yearly savings with gains</small>
         </article>
         <article class="card">
           <h3>Total Monthly Savings Goals</h3>
           <p id="overviewMonthlySavings">$0.00</p>
           <small>All savings goals</small>
         </article>
+        <article class="card highlight-card">
+          <h3>Annual Savings</h3>
+          <p id="overviewAnnualSavings">$0.00</p>
+          <small>Yearly savings with gains</small>
+        </article>
       </div>
-
     </section>
 
     <!-- CURRENT SAVINGS & RUNWAY -->
@@ -213,149 +198,127 @@
         <button class="tab-btn active" onclick="switchTab('income-tab')">Income</button>
         <button class="tab-btn" onclick="switchTab('expense-tab')">Expenses</button>
         <button class="tab-btn" onclick="switchTab('savings-tab')">Monthly Savings Goal</button>
+        <button class="tab-btn" onclick="switchTab('budgets-tab')">Budget Snapshots</button>
       </div>
 
       <!-- INCOME TAB -->
       <div id="income-tab" class="tab-content active">
-        <div class="grid-2">
-          <div>
-            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Add Income Source</h3>
-            <form id="incomeForm" class="stack">
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Source Name</small>
-                <input name="source_name" placeholder="e.g., Salary, Freelance, Bonus" required />
-              </label>
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Amount</small>
-                <input name="amount" type="number" step="0.01" placeholder="0.00" required />
-              </label>
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Frequency</small>
-                <select name="frequency">
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="bi-weekly">Bi-Weekly</option>
-                  <option value="monthly" selected>Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-              </label>
-              <button class="btn" type="submit">Add Income</button>
-            </form>
-          </div>
-          <div>
-            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Your Income Sources</h3>
-            <div id="incomeList" style="min-height: 100px;"></div>
-          </div>
-        </div>
+        <form id="incomeForm" class="stack">
+          <h3 style="margin-top: 0;">Add Income Source</h3>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Source Name</small>
+            <input name="source_name" placeholder="e.g., Salary, Freelance" required />
+          </label>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Amount</small>
+            <input name="amount" type="number" step="0.01" placeholder="0.00" required />
+          </label>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Frequency</small>
+            <select name="frequency">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="bi-weekly">Bi-Weekly</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </label>
+          <button class="btn" type="submit">Add Income</button>
+        </form>
+        <div id="incomeList"></div>
       </div>
 
       <!-- EXPENSE TAB -->
       <div id="expense-tab" class="tab-content">
-        <div class="grid-2">
-          <div>
-            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Add Expense</h3>
-            <form id="expenseForm" class="stack">
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Category</small>
-                <input name="category" placeholder="e.g., Groceries, Rent, Transportation" required />
-              </label>
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Amount</small>
-                <input name="amount" type="number" step="0.01" placeholder="0.00" required />
-              </label>
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Frequency</small>
-                <select name="frequency">
-                  <option value="one-time" selected>One-Time</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="bi-weekly">Bi-Weekly</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-              </label>
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Date</small>
-                <input id="expenseDate" name="date" type="date" required />
-              </label>
-              <button class="btn" type="submit">Add Expense</button>
-            </form>
-          </div>
-          <div>
-            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Your Expenses</h3>
-            <div id="expenseList" style="min-height: 100px;"></div>
-          </div>
-        </div>
+        <form id="expenseForm" class="stack">
+          <h3 style="margin-top: 0;">Add Expense</h3>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Category</small>
+            <input name="category" placeholder="e.g., Rent, Groceries" required />
+          </label>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Amount</small>
+            <input name="amount" type="number" step="0.01" placeholder="0.00" required />
+          </label>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Frequency</small>
+            <select name="frequency">
+              <option value="one-time" selected>One-Time</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="bi-weekly">Bi-Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </label>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Date</small>
+            <input name="date" type="date" required />
+          </label>
+          <button class="btn" type="submit">Add Expense</button>
+        </form>
+        <div id="expenseList"></div>
       </div>
 
       <!-- SAVINGS GOALS TAB -->
       <div id="savings-tab" class="tab-content">
-        <div class="grid-2">
-          <div>
-            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Add Savings Goal</h3>
-            <form id="savingsGoalForm" class="stack">
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Goal Name</small>
-                <input name="goal_name" placeholder="e.g., Emergency Fund, Vacation" required />
-              </label>
-              <label>
-                <small style="color: #666; text-transform: uppercase;">Monthly Amount</small>
-                <input name="amount" type="number" step="0.01" placeholder="0.00" required />
-              </label>
-              <label style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" name="hasGain" id="hasGainCheckbox" onchange="toggleGainInput()" />
-                <small style="color: #666; text-transform: uppercase;">Include annual gain %</small>
-              </label>
-              <label id="gainLabel" style="display: none;">
-                <small style="color: #666; text-transform: uppercase;">Annual Gain %</small>
-                <input name="gain" type="number" step="0.01" placeholder="0.00" />
-              </label>
-              <button class="btn" type="submit">Add Goal</button>
-            </form>
-          </div>
-          <div>
-            <h3 style="margin-top: 0; border-bottom: 2px solid var(--xp-accent); padding-bottom: 10px;">Your Savings Goals</h3>
-            <div id="savingsGoalsList" style="min-height: 100px;"></div>
-          </div>
-        </div>
-
+        <form id="savingsGoalForm" class="stack">
+          <h3 style="margin-top: 0;">Add Savings Goal</h3>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Goal Name</small>
+            <input name="goal_name" placeholder="e.g., Emergency Fund, Vacation" required />
+          </label>
+          <label>
+            <small style="color: #666; text-transform: uppercase;">Monthly Amount</small>
+            <input name="amount" type="number" step="0.01" placeholder="0.00" required />
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="hasGainCheckbox" onchange="toggleGainInput()" />
+            <small style="color: #666; text-transform: uppercase;">Include annual gain %</small>
+          </label>
+          <label id="gainLabel" style="display: none;">
+            <small style="color: #666; text-transform: uppercase;">Annual Gain %</small>
+            <input name="gain" type="number" step="0.01" placeholder="0.00" />
+          </label>
+          <button class="btn" type="submit">Add Goal</button>
+        </form>
         <div style="margin-top: 2rem;">
-          <div class="cards">
+          <h3>Savings Goals Summary</h3>
+          <div class="dashboard-grid">
             <article class="card">
-              <h3>Total Monthly Savings</h3>
-              <p id="totalMonthlySavings" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
-              <small>Sum of all goals</small>
+              <h4 style="margin: 0;">Total Monthly Savings</h4>
+              <p id="totalMonthlySavings" style="font-size: 1.5rem; margin: 0.5rem 0;">$0.00</p>
             </article>
             <article class="card highlight-card">
-              <h3>Annual Savings</h3>
-              <p id="totalAnnualSavings" style="color: var(--xp-accent); font-weight: bold; font-size: 1.8rem;">$0.00</p>
-              <small>Yearly total with gains</small>
+              <h4 style="margin: 0;">Total Annual Savings</h4>
+              <p id="totalAnnualSavings" style="font-size: 1.5rem; margin: 0.5rem 0;">$0.00</p>
             </article>
           </div>
+          <h3 style="margin-top: 2rem;">Your Goals</h3>
+          <div id="savingsGoalsList"></div>
         </div>
       </div>
-    </section>
 
-    <!-- SAVED BUDGETS -->
-    <section>
-      <h2>Saved Budgets <span class="help-icon" title="Save and compare your budget snapshots">?</span></h2>
-      <p style="color: #666; margin: 0 0 1.5rem 0; font-size: 0.95rem;">Save your current budget to compare different scenarios.</p>
-      <button class="btn" style="margin-bottom: 1.5rem;" onclick="saveBudget()">Save Current Budget</button>
-      <div class="history" id="budgetList"></div>
+      <!-- BUDGET SNAPSHOTS TAB -->
+      <div id="budgets-tab" class="tab-content">
+        <h3>Save Current Budget</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 2rem;">
+          <div>
+            <label>
+              <small style="color: #666; text-transform: uppercase;">Snapshot Name</small>
+              <input type="text" id="budgetName" placeholder="e.g., April Budget, Summer Plan" />
+            </label>
+          </div>
+          <div style="display: flex; align-items: flex-end;">
+            <button class="btn" type="button" onclick="saveBudget()" style="width: 100%; padding: 12px;">Save Snapshot</button>
+          </div>
+        </div>
+
+        <h3>Previous Budgets</h3>
+        <div id="budgetsList"></div>
+      </div>
     </section>
   </main>
-
-  <!-- BUDGET DETAIL MODAL -->
-  <div id="budgetModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
-    <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 12px; max-width: 600px; position: relative;">
-      <button onclick="closeBudgetModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
-      <h2 id="budgetModalTitle">Budget Details</h2>
-      <div id="budgetModalContent"></div>
-    </div>
-  </div>
-
-  <!-- HELP TOOLTIP -->
-  <div id="helpTooltip" class="tooltip" style="display: none;"></div>
 
   <!-- EDIT INCOME MODAL -->
   <div id="editIncomeModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow: auto;">
@@ -365,7 +328,7 @@
         <input type="hidden" id="editIncomeId" />
         <label>
           <small style="color: #666; text-transform: uppercase;">Source Name</small>
-          <input id="editIncomeName" placeholder="e.g., Salary" required />
+          <input id="editIncomeSourceName" placeholder="e.g., Salary" required />
         </label>
         <label>
           <small style="color: #666; text-transform: uppercase;">Amount</small>
@@ -452,29 +415,14 @@
 
   <script>
     function switchTab(tabId) {
-      // Hide all tabs
       const tabs = document.querySelectorAll('.tab-content');
       tabs.forEach(tab => tab.classList.remove('active'));
-
-      // Remove active from all buttons
       const btns = document.querySelectorAll('.tab-btn');
       btns.forEach(btn => btn.classList.remove('active'));
-
-      // Show selected tab
       document.getElementById(tabId).classList.add('active');
-
-      // Add active to button
       event.target.classList.add('active');
     }
   </script>
   <script src="app.js"></script>
-  <script>
-    // Register service worker for PWA functionality
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(registration => console.log('Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed:', err));
-    }
-  </script>
 </body>
 </html>
