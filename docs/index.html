@@ -42,12 +42,37 @@
       flex-wrap: wrap;
       justify-content: flex-end;
     }
-    #themeSelect {
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: none;
+    .theme-select {
+      position: relative;
+      width: 40px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       background: rgba(255,255,255,0.95);
+      border-radius: 8px;
       cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .theme-select:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+    .theme-icon {
+      font-size: 1.1rem;
+      pointer-events: none;
+      line-height: 1;
+    }
+    #themeSelect {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      border: none;
+      padding: 0;
       font-weight: 600;
     }
     .file-btn {
@@ -120,12 +145,15 @@
       <h1 class="header-title" style="margin: 0; color: white; font-size: 1.8rem;">Runway</h1>
     </div>
     <div class="header-right">
-      <select id="themeSelect" onchange="changeTheme(this.value)">
-        <option value="indigo" selected>Indigo</option>
-        <option value="mint">Mint</option>
-        <option value="forest">Forest</option>
-        <option value="slate">Slate</option>
-      </select>
+      <label class="theme-select" aria-label="Choose theme" title="Theme">
+        <span class="theme-icon" aria-hidden="true">🎨</span>
+        <select id="themeSelect" onchange="changeTheme(this.value)">
+          <option value="indigo" selected>Indigo</option>
+          <option value="mint">Mint</option>
+          <option value="forest">Forest</option>
+          <option value="slate">Slate</option>
+        </select>
+      </label>
       <button class="file-btn" onclick="document.getElementById('fileInput').click()">Load</button>
       <button class="file-btn" onclick="downloadData()">Save</button>
       <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)" />
