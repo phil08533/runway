@@ -31,6 +31,26 @@ window.addEventListener('load', () => {
   changeTheme(VALID_THEMES.includes(saved) ? saved : 'indigo');
 });
 
+// ===== CONFETTI =====
+function celebrate() {
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#3f51b5', '#66bb6a', '#ef5350', '#26a69a', '#ec407a', '#ff9800', '#ffd54f', '#5c6bc0'];
+  const count = 36;
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[i % colors.length];
+    piece.style.width = (5 + Math.random() * 7) + 'px';
+    piece.style.height = (9 + Math.random() * 8) + 'px';
+    piece.style.animationDuration = (1.4 + Math.random() * 1.2) + 's';
+    piece.style.animationDelay = (Math.random() * 0.25) + 's';
+    piece.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 3500);
+  }
+}
+
 // ===== HELP TOOLTIPS (tap-friendly) =====
 function showHelpTip(icon) {
   document.querySelectorAll('.tooltip-popup').forEach(t => t.remove());
@@ -142,6 +162,7 @@ $('#incomeForm')?.addEventListener('submit', (e) => {
   DB.saveIncome(income);
   e.target.reset();
   loadDashboard();
+  celebrate();
 });
 
 function loadIncomeList() {
@@ -310,6 +331,7 @@ function deleteExpense(expenseId) {
     const expenses = DB.expenses.filter(e => e.expense_id !== expenseId);
     DB.saveExpenses(expenses);
     loadDashboard();
+    celebrate();
   }
 }
 

@@ -222,7 +222,12 @@ section > h2 {
 
 .card.highlight-card p {
   color: var(--xp-accent);
-  font-size: clamp(1.4rem, 6vw, 2.2rem);
+  font-size: clamp(1rem, 4.8vw, 2.2rem);
+}
+
+.card.highlight-card small {
+  color: var(--xp-accent);
+  opacity: 0.85;
 }
 
 .card h3 {
@@ -236,10 +241,15 @@ section > h2 {
 
 .card p {
   margin: 0;
-  font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+  font-size: clamp(1.1rem, 5.2vw, 2.4rem);
   font-weight: 800;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .card small {
@@ -640,7 +650,7 @@ button:active, .btn:active {
   }
 
   .card {
-    padding: 14px;
+    padding: 12px;
     border-radius: 10px;
   }
 
@@ -652,4 +662,46 @@ button:active, .btn:active {
   .card small {
     font-size: 0.75rem;
   }
+}
+
+/* ===== ANIMATIONS ===== */
+
+/* Rocket lands when the page first paints */
+@keyframes rocket-land {
+  0%   { transform: translateY(-220px) rotate(-15deg); opacity: 0; }
+  55%  { transform: translateY(12px) rotate(3deg); opacity: 1; }
+  75%  { transform: translateY(-6px) rotate(-2deg); }
+  100% { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+.unified-header .header-left svg {
+  animation: rocket-land 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-origin: 50% 80%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unified-header .header-left svg {
+    animation: none;
+  }
+}
+
+/* Confetti pieces fired by celebrate() */
+.confetti-piece {
+  position: fixed;
+  top: -20px;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(var(--rot, 720deg)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece { display: none; }
 }
