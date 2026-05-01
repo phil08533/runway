@@ -1,10 +1,11 @@
-const CACHE_NAME = 'runway-v9';
+const CACHE_NAME = 'runway-v10';
 const urlsToCache = [
   './',
   './index.html',
   './styles.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './astronaut.png'
 ];
 
 self.addEventListener('install', event => {
