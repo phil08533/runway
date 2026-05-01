@@ -1,13 +1,19 @@
 const $ = (sel) => document.querySelector(sel);
 
-function logout() {
-  if (confirm('Are you sure you want to logout?')) {
-    fetch('auth.php?action=logout', { method: 'POST' })
-      .then(() => window.location.href = 'login.php')
-      .catch(err => alert('Logout error: ' + err.message));
-  }
-}
+// ===== DATA MANAGEMENT =====
+const DB = {
+  get income() { return JSON.parse(localStorage.getItem('runway-income') || '[]'); },
+  get expenses() { return JSON.parse(localStorage.getItem('runway-expenses') || '[]'); },
+  get savingsGoals() { return JSON.parse(localStorage.getItem('runway-goals') || '[]'); },
+  get budgets() { return JSON.parse(localStorage.getItem('runway-budgets') || '[]'); },
 
+  saveIncome(items) { localStorage.setItem('runway-income', JSON.stringify(items)); },
+  saveExpenses(items) { localStorage.setItem('runway-expenses', JSON.stringify(items)); },
+  saveSavingsGoals(items) { localStorage.setItem('runway-goals', JSON.stringify(items)); },
+  saveBudgets(items) { localStorage.setItem('runway-budgets', JSON.stringify(items)); }
+};
+
+// ===== THEME MANAGEMENT =====
 function changeTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('futureworth-theme', theme);
@@ -17,6 +23,241 @@ function changeTheme(theme) {
   }
 }
 
+// Restore theme on load
+window.addEventListener('load', () => {
+  const savedTheme = localStorage.getItem('futureworth-theme') || 'blue';
+  changeTheme(savedTheme);
+});
+
+// ===== HELPERS =====
+function money(value) {
+  return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function calculateMonthlyValue(amount, frequency) {
+  switch (frequency) {
+    case 'daily': return amount * 30.4375;
+    case 'weekly': return amount * 4.333333;
+    case 'bi-weekly': return amount * 2.166667;
+    case 'monthly': return amount;
+    case 'yearly': return amount / 12;
+    case 'one-time': return 0;
+    default: return 0;
+  }
+}
+
+function getNextId(list) {
+  if (!list.length) return 1;
+  return Math.max(...list.map(item => item.income_id || item.expense_id || item.budget_id || 0)) + 1;
+}
+
+// ===== DASHBOARD =====
+function loadDashboard() {
+  const income = DB.income;
+  const expenses = DB.expenses;
+  const goals = DB.savingsGoals;
+
+  let incomeTotal = 0;
+  let expenseTotal = 0;
+
+  income.forEach(item => {
+    incomeTotal += calculateMonthlyValue(item.amount, item.frequency);
+  });
+
+  expenses.forEach(item => {
+    expenseTotal += calculateMonthlyValue(item.amount, item.frequency);
+  });
+
+  const savingsTotal = incomeTotal - expenseTotal;
+  const yearlyTotal = incomeTotal * 12;
+  const annualExpenses = expenseTotal * 12;
+
+  $('#incomeTotal').textContent = money(incomeTotal);
+  $('#expenseTotal').textContent = money(expenseTotal);
+  $('#savingsTotal').textContent = money(savingsTotal);
+  $('#yearlyTotal').textContent = money(yearlyTotal);
+  if ($('#annualExpenseTotal')) {
+    $('#annualExpenseTotal').textContent = money(annualExpenses);
+  }
+
+  loadIncomeList();
+  loadExpenseList();
+  loadSavingsGoals();
+  loadBudgets();
+}
+
+// ===== INCOME =====
+$('#incomeForm')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const income = DB.income;
+  income.push({
+    income_id: getNextId(income),
+    source_name: form.get('source_name'),
+    amount: parseFloat(form.get('amount')),
+    frequency: form.get('frequency'),
+    created_at: new Date().toISOString()
+  });
+  DB.saveIncome(income);
+  e.target.reset();
+  loadDashboard();
+});
+
+function loadIncomeList() {
+  const income = DB.income;
+  const list = $('#incomeList');
+  list.innerHTML = '';
+
+  if (income.length === 0) {
+    list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No income sources yet</p>';
+    return;
+  }
+
+  income.forEach(item => {
+    const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div>
+        <strong>${item.source_name}</strong> - ${money(item.amount)} (${item.frequency})
+        <p style="margin: 0.25rem 0 0 0; color: #999; font-size: 0.85rem;">Monthly equivalent: ${money(monthlyVal)}</p>
+      </div>
+      <div>
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" onclick="editIncome(${item.income_id})">Edit</button>
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" onclick="deleteIncome(${item.income_id})">Delete</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function editIncome(incomeId) {
+  const income = DB.income.find(i => i.income_id === incomeId);
+  if (!income) return;
+
+  document.getElementById('editIncomeId').value = incomeId;
+  document.getElementById('editIncomeSourceName').value = income.source_name;
+  document.getElementById('editIncomeAmount').value = income.amount;
+  document.getElementById('editIncomeFrequency').value = income.frequency;
+  $('#editIncomeModal').style.display = 'block';
+}
+
+function closeEditIncomeModal() {
+  $('#editIncomeModal').style.display = 'none';
+}
+
+$('#editIncomeForm')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const incomeId = parseInt(document.getElementById('editIncomeId').value);
+  const income = DB.income;
+  const item = income.find(i => i.income_id === incomeId);
+  if (item) {
+    item.source_name = document.getElementById('editIncomeSourceName').value;
+    item.amount = parseFloat(document.getElementById('editIncomeAmount').value);
+    item.frequency = document.getElementById('editIncomeFrequency').value;
+    DB.saveIncome(income);
+  }
+  closeEditIncomeModal();
+  loadDashboard();
+});
+
+function deleteIncome(incomeId) {
+  if (confirm('Delete this income source?')) {
+    const income = DB.income.filter(i => i.income_id !== incomeId);
+    DB.saveIncome(income);
+    loadDashboard();
+  }
+}
+
+// ===== EXPENSES =====
+$('#expenseForm')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const expenses = DB.expenses;
+  expenses.push({
+    expense_id: getNextId(expenses),
+    category: form.get('category'),
+    amount: parseFloat(form.get('amount')),
+    frequency: form.get('frequency'),
+    date: form.get('date'),
+    created_at: new Date().toISOString()
+  });
+  DB.saveExpenses(expenses);
+  e.target.reset();
+  const today = new Date().toISOString().split('T')[0];
+  document.querySelector('#expenseForm input[name="date"]').value = today;
+  loadDashboard();
+});
+
+function loadExpenseList() {
+  const expenses = DB.expenses;
+  const list = $('#expenseList');
+  list.innerHTML = '';
+
+  if (expenses.length === 0) {
+    list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No expenses yet</p>';
+    return;
+  }
+
+  expenses.forEach(item => {
+    const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div>
+        <strong>${item.category}</strong> - ${money(item.amount)} (${item.frequency} • ${item.date})
+        <p style="margin: 0.25rem 0 0 0; color: #999; font-size: 0.85rem;">Monthly equivalent: ${money(monthlyVal)}</p>
+      </div>
+      <div>
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" onclick="editExpense(${item.expense_id})">Edit</button>
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" onclick="deleteExpense(${item.expense_id})">Delete</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function editExpense(expenseId) {
+  const expense = DB.expenses.find(e => e.expense_id === expenseId);
+  if (!expense) return;
+
+  document.getElementById('editExpenseId').value = expenseId;
+  document.getElementById('editExpenseCategory').value = expense.category;
+  document.getElementById('editExpenseAmount').value = expense.amount;
+  document.getElementById('editExpenseFrequency').value = expense.frequency;
+  document.getElementById('editExpenseDate').value = expense.date;
+  $('#editExpenseModal').style.display = 'block';
+}
+
+function closeEditExpenseModal() {
+  $('#editExpenseModal').style.display = 'none';
+}
+
+$('#editExpenseForm')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const expenseId = parseInt(document.getElementById('editExpenseId').value);
+  const expenses = DB.expenses;
+  const item = expenses.find(e => e.expense_id === expenseId);
+  if (item) {
+    item.category = document.getElementById('editExpenseCategory').value;
+    item.amount = parseFloat(document.getElementById('editExpenseAmount').value);
+    item.frequency = document.getElementById('editExpenseFrequency').value;
+    item.date = document.getElementById('editExpenseDate').value;
+    DB.saveExpenses(expenses);
+  }
+  closeEditExpenseModal();
+  loadDashboard();
+});
+
+function deleteExpense(expenseId) {
+  if (confirm('Delete this expense?')) {
+    const expenses = DB.expenses.filter(e => e.expense_id !== expenseId);
+    DB.saveExpenses(expenses);
+    loadDashboard();
+  }
+}
+
+// ===== FINANCIAL RUNWAY =====
 function calculateRunway() {
   const savingsInput = document.getElementById('currentSavings');
   const savings = parseFloat(savingsInput.value) || 0;
@@ -37,7 +278,7 @@ function calculateRunway() {
   const months = Math.floor(savings / monthlyExpenses);
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
-  const weeks = Math.floor((savings % monthlyExpenses) / (monthlyExpenses / 4.333333));
+  const weeks = Math.floor((savings % monthlyExpenses) / (monthlyExpenses / 4.33));
 
   let timeText = '';
   if (years > 0) {
@@ -45,7 +286,7 @@ function calculateRunway() {
   } else if (months > 0) {
     timeText = `${months} month${months !== 1 ? 's' : ''} and ${weeks} week${weeks !== 1 ? 's' : ''}`;
   } else {
-    const days = Math.floor((savings / monthlyExpenses) * 30.4375);
+    const days = Math.floor((savings / monthlyExpenses) * 30);
     timeText = `${days} day${days !== 1 ? 's' : ''}`;
   }
 
@@ -70,299 +311,32 @@ function calculateRunway() {
   `;
 }
 
-function money(value) {
-  return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function calculateMonthlyValue(amount, frequency) {
-  switch (frequency) {
-    case 'daily': return amount * 30.4375;
-    case 'weekly': return amount * 4.333333;
-    case 'bi-weekly': return amount * 2.166667;
-    case 'monthly': return amount;
-    case 'yearly': return amount / 12;
-    case 'one-time': return 0;
-    default: return 0;
-  }
-}
-
-async function api(action, method = 'GET', body = null) {
-  const options = { method, headers: { 'Content-Type': 'application/json' } };
-  if (body) options.body = JSON.stringify(body);
-  const res = await fetch(`api.php?action=${encodeURIComponent(action)}`, options);
-  if (!res.ok) throw new Error((await res.json()).error || 'Request failed');
-  return res.json();
-}
-
-async function loadDashboard() {
-  const data = await api('dashboard');
-
-  // Update summary cards with monthly values
-  $('#incomeTotal').textContent = money(data.summary.income_total);
-  $('#expenseTotal').textContent = money(data.summary.expense_total);
-  $('#savingsTotal').textContent = money(data.summary.savings_total);
-
-  // Calculate yearly values
-  const monthlySavings = data.summary.savings_total;
-  const yearlySavings = monthlySavings * 12;
-  $('#yearlyTotal').textContent = money(yearlySavings);
-
-  // Calculate and display annual expenses
-  const annualExpenses = data.summary.expense_total * 12;
-  if ($('#annualExpenseTotal')) {
-    $('#annualExpenseTotal').textContent = money(annualExpenses);
-  }
-
-  // Load savings goals
-  loadSavingsGoals();
-
-
-  // Render income list
-  const incomeList = $('#incomeList');
-  incomeList.innerHTML = '';
-  if (data.income.length) {
-    data.income.forEach((item) => {
-      const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
-      const div = document.createElement('div');
-      div.className = 'history-item';
-      div.innerHTML = `
-        <div>
-          <h4 style="margin: 0;">${item.source_name}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${item.frequency}</p>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-weight: bold; color: var(--xp-accent);">${money(item.amount)} (${money(monthlyVal)}/mo)</div>
-          <div style="display: flex; gap: 0.3rem;">
-            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-edit-income="${item.income_id}">Edit</button>
-            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem; background: #c84b4b; border-color: #c84b4b;" data-delete-income="${item.income_id}">Delete</button>
-          </div>
-        </div>
-      `;
-      incomeList.appendChild(div);
-    });
-  } else {
-    incomeList.innerHTML = '<p style="color: #999; text-align: center;">No income sources yet</p>';
-  }
-
-  // Render expense list
-  const expenseList = $('#expenseList');
-  expenseList.innerHTML = '';
-  if (data.expenses.length) {
-    data.expenses.forEach((item) => {
-      const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
-      const div = document.createElement('div');
-      div.className = 'history-item';
-      div.innerHTML = `
-        <div>
-          <h4 style="margin: 0;">${item.category}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">${item.frequency} • ${item.date}</p>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-weight: bold; color: var(--xp-accent);">${money(item.amount)} (${money(monthlyVal)}/mo)</div>
-          <div style="display: flex; gap: 0.3rem;">
-            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem;" data-edit-expense="${item.expense_id}">Edit</button>
-            <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem; background: #c84b4b; border-color: #c84b4b;" data-delete-expense="${item.expense_id}">Delete</button>
-          </div>
-        </div>
-      `;
-      expenseList.appendChild(div);
-    });
-  } else {
-    expenseList.innerHTML = '<p style="color: #999; text-align: center;">No expenses yet</p>';
-  }
-
-  // Update budget list
-  loadBudgets();
-}
-
-// Help tooltip system
-document.addEventListener('mouseover', (e) => {
-  const helpIcon = e.target.closest('.help-icon');
-  if (!helpIcon) return;
-  const tooltip = $('#helpTooltip');
-  tooltip.textContent = helpIcon.getAttribute('title');
-  tooltip.style.display = 'block';
-  const rect = helpIcon.getBoundingClientRect();
-  tooltip.style.left = (rect.left + rect.width / 2 - 100) + 'px';
-  tooltip.style.top = (rect.top - 40) + 'px';
-});
-
-document.addEventListener('mouseout', (e) => {
-  if (e.target.closest('.help-icon')) {
-    $('#helpTooltip').style.display = 'none';
-  }
-});
-
-// Initialize theme and setup
-document.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('futureworth-theme') || 'blue';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  const themeSelect = document.getElementById('themeSelect');
-  if (themeSelect) {
-    themeSelect.value = savedTheme;
-  }
-
-  const expenseDateInput = document.getElementById('expenseDate');
-  if (expenseDateInput) {
-    expenseDateInput.valueAsDate = new Date();
-  }
-});
-
-$('#incomeForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    const form = new FormData(e.target);
-    await api('income', 'POST', Object.fromEntries(form));
-    e.target.reset();
-    await loadDashboard();
-  } catch (err) {
-    alert('Error adding income: ' + err.message);
-  }
-});
-
-$('#expenseForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    const form = new FormData(e.target);
-    if (!form.get('date')) {
-      form.set('date', new Date().toISOString().split('T')[0]);
-    }
-    await api('expense', 'POST', Object.fromEntries(form));
-    e.target.reset();
-    e.target.querySelector('input[name="date"]').valueAsDate = new Date();
-    await loadDashboard();
-  } catch (err) {
-    alert('Error adding expense: ' + err.message);
-  }
-});
-
-// Budgets (save/load budget snapshots)
-async function saveBudget() {
-  const name = prompt('Budget name:');
-  if (!name) return;
-
-  const data = await api('dashboard');
-  const budgetData = {
-    name: name,
-    income: data.income,
-    expenses: data.expenses,
-    summary: data.summary,
-    date: new Date().toISOString().split('T')[0]
-  };
-
-  try {
-    await api('budget', 'POST', budgetData);
-    alert('Budget saved!');
-    await loadBudgets();
-  } catch (err) {
-    alert('Error saving budget: ' + err.message);
-  }
-}
-
-async function loadBudgets() {
-  try {
-    const data = await api('budgets', 'GET');
-    const list = $('#budgetList');
-    list.innerHTML = '';
-
-    if (!data.budgets || data.budgets.length === 0) {
-      list.innerHTML = '<p style="color: #999; text-align: center;">No saved budgets. Create one to compare.</p>';
-      return;
-    }
-
-    data.budgets.forEach((budget) => {
-      const item = document.createElement('div');
-      item.className = 'history-item';
-      item.innerHTML = `
-        <div>
-          <h4 style="margin: 0;">${budget.budget_name}</h4>
-          <p style="margin: 0.25rem 0 0 0; color: #666;">Income: ${money(budget.total_income)} | Expenses: ${money(budget.total_expenses)} | Savings: ${money(budget.monthly_savings)} (${budget.created_at})</p>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;" data-view-budget="${budget.budget_id}">View</button>
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete-budget="${budget.budget_id}">Delete</button>
-        </div>
-      `;
-      list.appendChild(item);
-    });
-  } catch (err) {
-    console.error('Error loading budgets:', err);
-  }
-}
-
-// Event delegation for deletions and budget viewing
-document.addEventListener('click', async (e) => {
-  const deleteIncomeId = e.target.dataset.deleteIncome;
-  const deleteExpenseId = e.target.dataset.deleteExpense;
-  const deleteBudgetId = e.target.dataset.deleteBudget;
-  const viewBudgetId = e.target.dataset.viewBudget;
-
-  if (deleteIncomeId && confirm('Delete this income source?')) {
-    try {
-      await api('income', 'DELETE', { income_id: deleteIncomeId });
-      await loadDashboard();
-    } catch (err) {
-      alert('Error: ' + err.message);
-    }
-  }
-
-  if (deleteExpenseId && confirm('Delete this expense?')) {
-    try {
-      await api('expense', 'DELETE', { expense_id: deleteExpenseId });
-      await loadDashboard();
-    } catch (err) {
-      alert('Error: ' + err.message);
-    }
-  }
-
-  if (deleteBudgetId && confirm('Delete this budget?')) {
-    try {
-      await api('budget', 'DELETE', { budget_id: deleteBudgetId });
-      await loadBudgets();
-    } catch (err) {
-      alert('Error: ' + err.message);
-    }
-  }
-
-  if (viewBudgetId) {
-    viewBudgetDetails(viewBudgetId);
-  }
-});
-
-// Savings goals functions
+// ===== SAVINGS GOALS =====
 function toggleGainInput() {
   const checkbox = document.getElementById('hasGainCheckbox');
   const gainLabel = document.getElementById('gainLabel');
   gainLabel.style.display = checkbox.checked ? 'flex' : 'none';
 }
 
-$('#savingsGoalForm').addEventListener('submit', async (e) => {
+$('#savingsGoalForm')?.addEventListener('submit', (e) => {
   e.preventDefault();
-  try {
-    const form = new FormData(e.target);
-    const data = Object.fromEntries(form);
-    const goal = {
-      id: Date.now(),
-      name: data.goal_name,
-      amount: parseFloat(data.amount) || 0,
-      gain: data.hasGain ? (parseFloat(data.gain) || 0) : 0
-    };
-
-    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
-    goals.push(goal);
-    localStorage.setItem('savings-goals', JSON.stringify(goals));
-
-    e.target.reset();
-    document.getElementById('hasGainCheckbox').checked = false;
-    document.getElementById('gainLabel').style.display = 'none';
-    loadSavingsGoals();
-  } catch (err) {
-    alert('Error adding savings goal: ' + err.message);
-  }
+  const form = new FormData(e.target);
+  const goals = DB.savingsGoals;
+  goals.push({
+    id: Date.now(),
+    name: form.get('goal_name'),
+    amount: parseFloat(form.get('amount')) || 0,
+    gain: form.get('hasGain') ? (parseFloat(form.get('gain')) || 0) : 0
+  });
+  DB.saveSavingsGoals(goals);
+  e.target.reset();
+  document.getElementById('hasGainCheckbox').checked = false;
+  document.getElementById('gainLabel').style.display = 'none';
+  loadDashboard();
 });
 
 function loadSavingsGoals() {
-  const goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+  const goals = DB.savingsGoals;
   const list = $('#savingsGoalsList');
   list.innerHTML = '';
 
@@ -385,8 +359,8 @@ function loadSavingsGoals() {
           </p>
         </div>
         <div style="text-align: right;">
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" data-edit-goal="${goal.id}">Edit</button>
-          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" data-delete-goal="${goal.id}">Delete</button>
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" onclick="editSavingsGoal(${goal.id})">Edit</button>
+          <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" onclick="deleteSavingsGoal(${goal.id})">Delete</button>
         </div>
       `;
       list.appendChild(div);
@@ -397,7 +371,7 @@ function loadSavingsGoals() {
 }
 
 function updateSavingsGoalsSummary() {
-  const goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
+  const goals = DB.savingsGoals;
 
   let totalMonthly = 0;
   let totalAnnual = 0;
@@ -412,78 +386,29 @@ function updateSavingsGoalsSummary() {
   $('#totalMonthlySavings').textContent = money(totalMonthly);
   $('#totalAnnualSavings').textContent = money(totalAnnual);
 
-  // Update overview cards
   if ($('#overviewMonthlySavings')) {
     $('#overviewMonthlySavings').textContent = money(totalMonthly);
     $('#overviewAnnualSavings').textContent = money(totalAnnual);
   }
 }
 
-// Edit/Delete event delegation
-document.addEventListener('click', async (e) => {
-  const deleteGoalId = e.target.dataset.deleteGoal;
-  const editGoalId = e.target.dataset.editGoal;
-  const editIncomeId = e.target.dataset.editIncome;
-  const editExpenseId = e.target.dataset.editExpense;
+function editSavingsGoal(goalId) {
+  const goal = DB.savingsGoals.find(g => g.id === goalId);
+  if (!goal) return;
 
-  if (deleteGoalId && confirm('Delete this savings goal?')) {
-    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
-    goals = goals.filter(g => g.id != deleteGoalId);
-    localStorage.setItem('savings-goals', JSON.stringify(goals));
-    loadSavingsGoals();
+  document.getElementById('editSavingsGoalId').value = goalId;
+  document.getElementById('editSavingsGoalName').value = goal.name;
+  document.getElementById('editSavingsGoalAmount').value = goal.amount;
+  document.getElementById('editSavingsGoalHasGain').checked = goal.gain > 0;
+  if (goal.gain > 0) {
+    document.getElementById('editGainLabel').style.display = 'flex';
+    document.getElementById('editSavingsGoalGain').value = goal.gain;
   }
-
-  if (editGoalId) {
-    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
-    const goal = goals.find(g => g.id == editGoalId);
-    if (goal) {
-      document.getElementById('editSavingsGoalId').value = goal.id;
-      document.getElementById('editSavingsGoalName').value = goal.name;
-      document.getElementById('editSavingsGoalAmount').value = goal.amount;
-      document.getElementById('editSavingsGoalHasGain').checked = goal.gain > 0;
-      document.getElementById('editSavingsGoalGain').value = goal.gain;
-      document.getElementById('editGainLabel').style.display = goal.gain > 0 ? 'flex' : 'none';
-      document.getElementById('editSavingsGoalModal').style.display = 'block';
-    }
-  }
-
-  if (editIncomeId) {
-    const data = await api('dashboard');
-    const income = data.income.find(i => i.income_id == editIncomeId);
-    if (income) {
-      document.getElementById('editIncomeId').value = income.income_id;
-      document.getElementById('editIncomeName').value = income.source_name;
-      document.getElementById('editIncomeAmount').value = income.amount;
-      document.getElementById('editIncomeFrequency').value = income.frequency;
-      document.getElementById('editIncomeModal').style.display = 'block';
-    }
-  }
-
-  if (editExpenseId) {
-    const data = await api('dashboard');
-    const expense = data.expenses.find(e => e.expense_id == editExpenseId);
-    if (expense) {
-      document.getElementById('editExpenseId').value = expense.expense_id;
-      document.getElementById('editExpenseCategory').value = expense.category;
-      document.getElementById('editExpenseAmount').value = expense.amount;
-      document.getElementById('editExpenseFrequency').value = expense.frequency;
-      document.getElementById('editExpenseDate').value = expense.date;
-      document.getElementById('editExpenseModal').style.display = 'block';
-    }
-  }
-});
-
-// Edit modal functions
-function closeEditIncomeModal() {
-  document.getElementById('editIncomeModal').style.display = 'none';
-}
-
-function closeEditExpenseModal() {
-  document.getElementById('editExpenseModal').style.display = 'none';
+  $('#editSavingsGoalModal').style.display = 'block';
 }
 
 function closeEditSavingsGoalModal() {
-  document.getElementById('editSavingsGoalModal').style.display = 'none';
+  $('#editSavingsGoalModal').style.display = 'none';
 }
 
 function toggleEditGainInput() {
@@ -492,168 +417,161 @@ function toggleEditGainInput() {
   gainLabel.style.display = checkbox.checked ? 'flex' : 'none';
 }
 
-// Edit form submissions
-document.getElementById('editIncomeForm').addEventListener('submit', async (e) => {
+$('#editSavingsGoalForm')?.addEventListener('submit', (e) => {
   e.preventDefault();
-  try {
-    const incomeId = parseInt(document.getElementById('editIncomeId').value);
-    const sourceName = document.getElementById('editIncomeName').value;
-    const amount = parseFloat(document.getElementById('editIncomeAmount').value);
-    const frequency = document.getElementById('editIncomeFrequency').value;
-
-    await api('income', 'PUT', { income_id: incomeId, source_name: sourceName, amount, frequency });
-    closeEditIncomeModal();
-    await loadDashboard();
-  } catch (err) {
-    alert('Error saving income: ' + err.message);
+  const goalId = parseInt(document.getElementById('editSavingsGoalId').value);
+  const goals = DB.savingsGoals;
+  const goal = goals.find(g => g.id === goalId);
+  if (goal) {
+    goal.name = document.getElementById('editSavingsGoalName').value;
+    goal.amount = parseFloat(document.getElementById('editSavingsGoalAmount').value);
+    goal.gain = document.getElementById('editSavingsGoalHasGain').checked ? parseFloat(document.getElementById('editSavingsGoalGain').value) || 0 : 0;
+    DB.saveSavingsGoals(goals);
   }
+  closeEditSavingsGoalModal();
+  loadDashboard();
 });
 
-document.getElementById('editExpenseForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    const expenseId = parseInt(document.getElementById('editExpenseId').value);
-    const category = document.getElementById('editExpenseCategory').value;
-    const amount = parseFloat(document.getElementById('editExpenseAmount').value);
-    const frequency = document.getElementById('editExpenseFrequency').value;
-    const date = document.getElementById('editExpenseDate').value;
-
-    await api('expense', 'PUT', { expense_id: expenseId, category, amount, frequency, date });
-    closeEditExpenseModal();
-    await loadDashboard();
-  } catch (err) {
-    alert('Error saving expense: ' + err.message);
-  }
-});
-
-document.getElementById('editSavingsGoalForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  try {
-    const goalId = parseInt(document.getElementById('editSavingsGoalId').value);
-    const name = document.getElementById('editSavingsGoalName').value;
-    const amount = parseFloat(document.getElementById('editSavingsGoalAmount').value);
-    const hasGain = document.getElementById('editSavingsGoalHasGain').checked;
-    const gain = hasGain ? parseFloat(document.getElementById('editSavingsGoalGain').value) || 0 : 0;
-
-    let goals = JSON.parse(localStorage.getItem('savings-goals') || '[]');
-    const goal = goals.find(g => g.id == goalId);
-    if (goal) {
-      goal.name = name;
-      goal.amount = amount;
-      goal.gain = gain;
-      localStorage.setItem('savings-goals', JSON.stringify(goals));
-      closeEditSavingsGoalModal();
-      loadSavingsGoals();
-    }
-  } catch (err) {
-    alert('Error saving goal: ' + err.message);
-  }
-});
-
-// Budget detail modal functions
-async function viewBudgetDetails(budgetId) {
-  try {
-    const data = await api('budgets', 'GET');
-    const budget = data.budgets.find(b => b.budget_id == budgetId);
-    if (!budget) {
-      alert('Budget not found');
-      return;
-    }
-
-    const budgetData = JSON.parse(budget.budget_data || '{"income":[],"expenses":[]}');
-    const modal = $('#budgetModal');
-    const title = $('#budgetModalTitle');
-    const content = $('#budgetModalContent');
-
-    title.textContent = budget.budget_name;
-
-    let html = `<p style="color: #666; margin-bottom: 1.5rem;">Created: ${budget.created_at}</p>`;
-    html += `<div class="cards" style="margin-bottom: 1.5rem;">
-      <div class="card">
-        <h4 style="margin: 0 0 0.5rem 0;">Total Income</h4>
-        <p style="font-weight: bold; color: var(--xp-accent);">${money(budget.total_income)}</p>
-      </div>
-      <div class="card">
-        <h4 style="margin: 0 0 0.5rem 0;">Total Expenses</h4>
-        <p style="font-weight: bold; color: var(--xp-accent);">${money(budget.total_expenses)}</p>
-      </div>
-      <div class="card highlight-card">
-        <h4 style="margin: 0 0 0.5rem 0;">Monthly Savings</h4>
-        <p style="font-weight: bold; color: var(--xp-accent);">${money(budget.monthly_savings)}</p>
-      </div>
-    </div>`;
-
-    if (budgetData.income && budgetData.income.length > 0) {
-      html += `<h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Income Sources</h4>`;
-      budgetData.income.forEach((item) => {
-        html += `<div style="padding: 0.75rem; background: #f5f5f5; border-radius: 6px; margin-bottom: 0.5rem;">
-          <strong>${item.source_name}</strong> - ${money(item.amount)} (${item.frequency})
-        </div>`;
-      });
-    }
-
-    if (budgetData.expenses && budgetData.expenses.length > 0) {
-      html += `<h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Expenses</h4>`;
-      budgetData.expenses.forEach((item) => {
-        html += `<div style="padding: 0.75rem; background: #f5f5f5; border-radius: 6px; margin-bottom: 0.5rem;">
-          <strong>${item.category}</strong> - ${money(item.amount)} (${item.frequency})
-        </div>`;
-      });
-    }
-
-    content.innerHTML = html + `<div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
-      <button class="btn" style="flex: 1;" onclick="loadBudgetForEditing(${budgetId})">Load & Edit</button>
-      <button class="btn" style="flex: 1; background: #999;" onclick="closeBudgetModal()">Close</button>
-    </div>`;
-    modal.style.display = 'block';
-  } catch (err) {
-    alert('Error loading budget: ' + err.message);
+function deleteSavingsGoal(goalId) {
+  if (confirm('Delete this savings goal?')) {
+    const goals = DB.savingsGoals.filter(g => g.id !== goalId);
+    DB.saveSavingsGoals(goals);
+    loadDashboard();
   }
 }
 
-function closeBudgetModal() {
-  $('#budgetModal').style.display = 'none';
+// ===== BUDGETS =====
+function saveBudget() {
+  const name = document.getElementById('budgetName').value;
+  if (!name) {
+    alert('Please enter a budget name');
+    return;
+  }
+
+  const budgets = DB.budgets;
+  budgets.push({
+    budget_id: getNextId(budgets),
+    budget_name: name,
+    income: DB.income,
+    expenses: DB.expenses,
+    created_at: new Date().toISOString()
+  });
+  DB.saveBudgets(budgets);
+  document.getElementById('budgetName').value = '';
+  loadBudgets();
 }
 
-async function loadBudgetForEditing(budgetId) {
-  try {
-    const data = await api('budgets', 'GET');
-    const budget = data.budgets.find(b => b.budget_id == budgetId);
-    if (!budget) {
-      alert('Budget not found');
-      return;
-    }
+function loadBudgets() {
+  const budgets = DB.budgets;
+  const list = $('#budgetsList');
+  list.innerHTML = '';
 
-    const budgetData = JSON.parse(budget.budget_data || '{"income":[],"expenses":[]}');
+  if (budgets.length === 0) {
+    list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No budget snapshots yet</p>';
+    return;
+  }
 
-    // Add income items
-    for (const income of budgetData.income) {
-      await api('income', 'POST', {
-        source_name: income.source_name,
-        amount: income.amount,
-        frequency: income.frequency
-      });
-    }
+  budgets.forEach(budget => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    const date = new Date(budget.created_at).toLocaleDateString();
+    div.innerHTML = `
+      <div>
+        <h4 style="margin: 0;">${budget.budget_name}</h4>
+        <p style="margin: 0.25rem 0 0 0; color: #999; font-size: 0.85rem;">Saved on ${date}</p>
+        <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.85rem;">
+          ${budget.income.length} income items • ${budget.expenses.length} expense items
+        </p>
+      </div>
+      <div>
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" onclick="loadBudgetForEditing(${budget.budget_id})">Load & Edit</button>
+        <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; background: #c84b4b; border-color: #c84b4b;" onclick="deleteBudget(${budget.budget_id})">Delete</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
 
-    // Add expense items
-    for (const expense of budgetData.expenses) {
-      await api('expense', 'POST', {
-        category: expense.category,
-        amount: expense.amount,
-        frequency: expense.frequency,
-        date: expense.date
-      });
-    }
+function loadBudgetForEditing(budgetId) {
+  const budgets = DB.budgets;
+  const budget = budgets.find(b => b.budget_id === budgetId);
+  if (!budget) {
+    alert('Budget not found');
+    return;
+  }
 
-    closeBudgetModal();
-    await loadDashboard();
-    alert('Budget loaded! You can now edit these items.');
-  } catch (err) {
-    alert('Error loading budget: ' + err.message);
+  DB.saveIncome(budget.income);
+  DB.saveExpenses(budget.expenses);
+  loadDashboard();
+  alert('Budget loaded! You can now edit these items.');
+}
+
+function deleteBudget(budgetId) {
+  if (confirm('Delete this budget snapshot?')) {
+    const budgets = DB.budgets.filter(b => b.budget_id !== budgetId);
+    DB.saveBudgets(budgets);
+    loadBudgets();
   }
 }
 
-loadDashboard().catch((err) => {
-  console.error(err);
-  alert('Unable to load dashboard. Check that:\n1. PHP server is running\n2. MySQL database is set up\n3. Database credentials in db.php are correct');
+// ===== FILE IMPORT/EXPORT =====
+function downloadData() {
+  const data = {
+    version: '1.0',
+    exportDate: new Date().toISOString(),
+    income: DB.income,
+    expenses: DB.expenses,
+    savingsGoals: DB.savingsGoals,
+    budgets: DB.budgets
+  };
+
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `runway-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      if (data.income) DB.saveIncome(data.income);
+      if (data.expenses) DB.saveExpenses(data.expenses);
+      if (data.savingsGoals) DB.saveSavingsGoals(data.savingsGoals);
+      if (data.budgets) DB.saveBudgets(data.budgets);
+
+      loadDashboard();
+      alert('Data loaded successfully!');
+    } catch (err) {
+      alert('Error loading file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => console.log('Service Worker registered'))
+    .catch(err => console.log('SW registration failed:', err));
+}
+
+// ===== INITIALIZE =====
+window.addEventListener('load', () => {
+  const today = new Date().toISOString().split('T')[0];
+  const dateInputs = document.querySelectorAll('input[type="date"]');
+  dateInputs.forEach(input => {
+    if (!input.value) input.value = today;
+  });
+  loadDashboard();
 });
