@@ -25,7 +25,7 @@ function changeTheme(theme) {
 
 // Restore theme on load
 window.addEventListener('load', () => {
-  const savedTheme = localStorage.getItem('futureworth-theme') || 'blue';
+  const savedTheme = localStorage.getItem('futureworth-theme') || 'indigo';
   changeTheme(savedTheme);
 });
 
