@@ -80,7 +80,7 @@
     }
     @media (max-width: 640px) {
       .dashboard-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
     }
     @media (min-width: 1200px) {
