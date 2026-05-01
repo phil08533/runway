@@ -1,160 +1,13 @@
-/* ===== THEMES ===== */
+/* ===== THEMES =====
+   Four curated themes. The visible dashboard cards (card-1, card-2,
+   card-5) use vibrant gradients that work with white text; each
+   theme tints the page background, header, and accent. card-3,
+   card-4, card-6 are unused at runtime (those slots render as
+   .highlight-card) but kept for completeness. */
 
-/* Blue Theme (Default) */
-:root[data-theme="blue"] {
-  --xp-bg: #e3f2fd;
-  --xp-panel: #ffffff;
-  --xp-text: #1565c0;
-  --xp-border: #90caf9;
-  --xp-border-light: #e3f2fd;
-  --xp-accent: #1976d2;
-  --xp-accent-light: #42a5f5;
-  --xp-gradient-start: #1e3a8a;
-  --xp-gradient-end: #3b82f6;
-  --card-1: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  --card-2: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  --card-5: linear-gradient(135deg, #1b5e20 0%, #388e3c 100%);
-  --card-6: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
-}
-
-/* Mint Theme */
-:root[data-theme="mint"] {
-  --xp-bg: #e0f7f4;
-  --xp-panel: #ffffff;
-  --xp-text: #00695c;
-  --xp-border: #80deea;
-  --xp-border-light: #b2ebf2;
-  --xp-accent: #00897b;
-  --xp-accent-light: #26a69a;
-  --xp-gradient-start: #004d40;
-  --xp-gradient-end: #00897b;
-  --card-1: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
-  --card-2: linear-gradient(135deg, #80deea 0%, #4dd0e1 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
-  --card-5: linear-gradient(135deg, #00695c 0%, #00897b 100%);
-  --card-6: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-}
-
-/* Sunset Theme */
-:root[data-theme="sunset"] {
-  --xp-bg: #fff3e0;
-  --xp-panel: #ffffff;
-  --xp-text: #e65100;
-  --xp-border: #ffb74d;
-  --xp-border-light: #ffe0b2;
-  --xp-accent: #f57c00;
-  --xp-accent-light: #ffb74d;
-  --xp-gradient-start: #bf360c;
-  --xp-gradient-end: #ff6f00;
-  --card-1: linear-gradient(135deg, #dcedc1 0%, #c5e1a5 100%);
-  --card-2: linear-gradient(135deg, #aed581 0%, #9ccc65 100%);
-  --card-3: linear-gradient(135deg, #ffcc80 0%, #ffa726 100%);
-  --card-4: linear-gradient(135deg, #ffecb3 0%, #ffd54f 100%);
-  --card-5: linear-gradient(135deg, #bf360c 0%, #e64a19 100%);
-  --card-6: linear-gradient(135deg, #ffccbc 0%, #ffab91 100%);
-}
-
-/* Ocean Theme */
-:root[data-theme="ocean"] {
-  --xp-bg: #e0f7ff;
-  --xp-panel: #ffffff;
-  --xp-text: #006064;
-  --xp-border: #80deea;
-  --xp-border-light: #b3e5fc;
-  --xp-accent: #0097a7;
-  --xp-accent-light: #26c6da;
-  --xp-gradient-start: #004d73;
-  --xp-gradient-end: #0288a0;
-  --card-1: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
-  --card-2: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);
-  --card-5: linear-gradient(135deg, #01579b 0%, #0277bd 100%);
-  --card-6: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-}
-
-/* Purple Theme */
-:root[data-theme="purple"] {
-  --xp-bg: #f3e5f5;
-  --xp-panel: #ffffff;
-  --xp-text: #4a148c;
-  --xp-border: #ce93d8;
-  --xp-border-light: #e1bee7;
-  --xp-accent: #7b1fa2;
-  --xp-accent-light: #ba68c8;
-  --xp-gradient-start: #4a148c;
-  --xp-gradient-end: #7b1fa2;
-  --card-1: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
-  --card-2: linear-gradient(135deg, #c5cae9 0%, #9fa8da 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
-  --card-5: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
-  --card-6: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-}
-
-/* Forest Theme */
-:root[data-theme="forest"] {
-  --xp-bg: #e8f5e9;
-  --xp-panel: #ffffff;
-  --xp-text: #1b5e20;
-  --xp-border: #81c784;
-  --xp-border-light: #c8e6c9;
-  --xp-accent: #388e3c;
-  --xp-accent-light: #66bb6a;
-  --xp-gradient-start: #1b5e20;
-  --xp-gradient-end: #2e7d32;
-  --card-1: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
-  --card-2: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
-  --card-3: linear-gradient(135deg, #ffccbc 0%, #ffab91 100%);
-  --card-4: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
-  --card-5: linear-gradient(135deg, #1b5e20 0%, #388e3c 100%);
-  --card-6: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-}
-
-/* Rose Theme */
-:root[data-theme="rose"] {
-  --xp-bg: #fce4ec;
-  --xp-panel: #ffffff;
-  --xp-text: #880e4f;
-  --xp-border: #f48fb1;
-  --xp-border-light: #f8bbd0;
-  --xp-accent: #c2185b;
-  --xp-accent-light: #f06292;
-  --xp-gradient-start: #880e4f;
-  --xp-gradient-end: #c2185b;
-  --card-1: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-  --card-2: linear-gradient(135deg, #f48fb1 0%, #ec407a 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-  --card-5: linear-gradient(135deg, #880e4f 0%, #ad1457 100%);
-  --card-6: linear-gradient(135deg, #e0bbd7 0%, #ce93d8 100%);
-}
-
-/* Slate Theme */
-:root[data-theme="slate"] {
-  --xp-bg: #eceff1;
-  --xp-panel: #ffffff;
-  --xp-text: #263238;
-  --xp-border: #b0bec5;
-  --xp-border-light: #cfd8dc;
-  --xp-accent: #455a64;
-  --xp-accent-light: #607d8b;
-  --xp-gradient-start: #263238;
-  --xp-gradient-end: #455a64;
-  --card-1: linear-gradient(135deg, #cfd8dc 0%, #b0bec5 100%);
-  --card-2: linear-gradient(135deg, #90a4ae 0%, #78909c 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #b0bec5 0%, #90a4ae 100%);
-  --card-5: linear-gradient(135deg, #37474f 0%, #455a64 100%);
-  --card-6: linear-gradient(135deg, #d4c5f9 0%, #b39ddb 100%);
-}
-
-/* Indigo Theme */
+/* Indigo Theme (default) — deep blue-violet, classic */
 :root[data-theme="indigo"] {
-  --xp-bg: #e8eaf6;
+  --xp-bg: #eef0f8;
   --xp-panel: #ffffff;
   --xp-text: #283593;
   --xp-border: #7986cb;
@@ -162,45 +15,83 @@
   --xp-accent: #3f51b5;
   --xp-accent-light: #5c6bc0;
   --xp-gradient-start: #283593;
-  --xp-gradient-end: #3f51b5;
-  --card-1: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
-  --card-2: linear-gradient(135deg, #9fa8da 0%, #7986cb 100%);
-  --card-3: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
-  --card-4: linear-gradient(135deg, #c5cae9 0%, #9fa8da 100%);
-  --card-5: linear-gradient(135deg, #283593 0%, #3f51b5 100%);
-  --card-6: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
+  --xp-gradient-end: #5c6bc0;
+  --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+  --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+  --card-3: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-4: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-5: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-6: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
 }
 
-/* Dark Theme */
-:root[data-theme="dark"] {
-  --xp-bg: #1a1a2e;
-  --xp-panel: #2d2d4d;
-  --xp-text: #e0e0e0;
-  --xp-border: #3d3d5f;
-  --xp-border-light: #4d4d7f;
-  --xp-accent: #64b5f6;
-  --xp-accent-light: #90caf9;
-  --xp-gradient-start: #0d47a1;
-  --xp-gradient-end: #1976d2;
-  --card-1: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
-  --card-2: linear-gradient(135deg, #558b2f 0%, #689f38 100%);
-  --card-3: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
-  --card-4: linear-gradient(135deg, #01579b 0%, #0277bd 100%);
-  --card-5: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-  --card-6: linear-gradient(135deg, #6a1b9a 0%, #7b1fa2 100%);
+/* Mint Theme — fresh teal, cool */
+:root[data-theme="mint"] {
+  --xp-bg: #e6f4f1;
+  --xp-panel: #ffffff;
+  --xp-text: #00695c;
+  --xp-border: #4db6ac;
+  --xp-border-light: #b2dfdb;
+  --xp-accent: #00897b;
+  --xp-accent-light: #26a69a;
+  --xp-gradient-start: #004d40;
+  --xp-gradient-end: #26a69a;
+  --card-1: linear-gradient(135deg, #26a69a 0%, #00695c 100%);
+  --card-2: linear-gradient(135deg, #ff7043 0%, #d84315 100%);
+  --card-3: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
+  --card-4: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
+  --card-5: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
+  --card-6: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
 }
 
-/* Default fallback */
+/* Forest Theme — earthy green, natural */
+:root[data-theme="forest"] {
+  --xp-bg: #ecf3ec;
+  --xp-panel: #ffffff;
+  --xp-text: #1b5e20;
+  --xp-border: #81c784;
+  --xp-border-light: #c8e6c9;
+  --xp-accent: #2e7d32;
+  --xp-accent-light: #66bb6a;
+  --xp-gradient-start: #1b5e20;
+  --xp-gradient-end: #43a047;
+  --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+  --card-2: linear-gradient(135deg, #ef6c00 0%, #bf360c 100%);
+  --card-3: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
+  --card-4: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
+  --card-5: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
+  --card-6: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
+}
+
+/* Slate Theme — modern grey-blue, neutral */
+:root[data-theme="slate"] {
+  --xp-bg: #eceff1;
+  --xp-panel: #ffffff;
+  --xp-text: #263238;
+  --xp-border: #90a4ae;
+  --xp-border-light: #cfd8dc;
+  --xp-accent: #455a64;
+  --xp-accent-light: #607d8b;
+  --xp-gradient-start: #263238;
+  --xp-gradient-end: #546e7a;
+  --card-1: linear-gradient(135deg, #546e7a 0%, #263238 100%);
+  --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+  --card-3: linear-gradient(135deg, #00838f 0%, #006064 100%);
+  --card-4: linear-gradient(135deg, #00838f 0%, #006064 100%);
+  --card-5: linear-gradient(135deg, #00838f 0%, #006064 100%);
+  --card-6: linear-gradient(135deg, #00838f 0%, #006064 100%);
+}
+
+/* Default fallback (matches indigo) */
 :root {
-  --xp-bg: #e3f2fd;
-  --xp-panel: #f8fbff;
-  --xp-text: #0d47a1;
-  --xp-border: #90caf9;
-  --xp-border-light: #e3f2fd;
-  --xp-accent: #1976d2;
-  --xp-accent-light: #42a5f5;
-  --xp-gradient-start: #1e3a8a;
-  --xp-gradient-end: #3b82f6;
+  --xp-bg: #eef0f8;
+  --xp-panel: #ffffff;
+  --xp-text: #283593;
+  --xp-border: #7986cb;
+  --xp-border-light: #c5cae9;
+  --xp-accent: #3f51b5;
+  --xp-accent-light: #5c6bc0;
+  --xp-gradient-start: #283593;
+  --xp-gradient-end: #5c6bc0;
 }
 
 * { box-sizing: border-box; }
@@ -308,7 +199,7 @@ section > h2 {
 }
 
 .card.highlight-card {
-  background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%);
+  background: var(--xp-bg);
   border: 2px solid var(--xp-accent);
   position: relative;
 }

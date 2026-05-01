@@ -23,10 +23,51 @@ function changeTheme(theme) {
   }
 }
 
+const VALID_THEMES = ['indigo', 'mint', 'forest', 'slate'];
+
 // Restore theme on load
 window.addEventListener('load', () => {
-  const savedTheme = localStorage.getItem('futureworth-theme') || 'indigo';
-  changeTheme(savedTheme);
+  const saved = localStorage.getItem('futureworth-theme');
+  changeTheme(VALID_THEMES.includes(saved) ? saved : 'indigo');
+});
+
+// ===== HELP TOOLTIPS (tap-friendly) =====
+function showHelpTip(icon) {
+  document.querySelectorAll('.tooltip-popup').forEach(t => t.remove());
+  const text = icon.getAttribute('data-tip') || icon.getAttribute('title');
+  if (!text) return;
+  const tip = document.createElement('div');
+  tip.className = 'tooltip tooltip-popup';
+  tip.textContent = text;
+  document.body.appendChild(tip);
+  const r = icon.getBoundingClientRect();
+  const tipRect = tip.getBoundingClientRect();
+  let left = r.left + r.width / 2 - tipRect.width / 2;
+  if (left < 8) left = 8;
+  if (left + tipRect.width > window.innerWidth - 8) {
+    left = window.innerWidth - tipRect.width - 8;
+  }
+  tip.style.left = left + 'px';
+  tip.style.top = (r.bottom + 8) + 'px';
+}
+
+document.addEventListener('click', (e) => {
+  const icon = e.target.closest('.help-icon');
+  if (icon) {
+    e.stopPropagation();
+    showHelpTip(icon);
+  } else {
+    document.querySelectorAll('.tooltip-popup').forEach(t => t.remove());
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList?.contains('help-icon')) {
+    e.preventDefault();
+    showHelpTip(e.target);
+  } else if (e.key === 'Escape') {
+    document.querySelectorAll('.tooltip-popup').forEach(t => t.remove());
+  }
 });
 
 // ===== HELPERS =====
