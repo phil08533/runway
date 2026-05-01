@@ -486,8 +486,8 @@ function updateSavingsGoalsSummary() {
     totalAnnual += yearlyBase + gainAmount;
   });
 
-  $('#totalMonthlySavings').textContent = money(totalMonthly);
-  $('#totalAnnualSavings').textContent = money(totalAnnual);
+  $('#totalMonthlySavings') && ($('#totalMonthlySavings').textContent = money(totalMonthly));
+  $('#totalAnnualSavings') && ($('#totalAnnualSavings').textContent = money(totalAnnual));
 
   if ($('#overviewMonthlySavings')) {
     $('#overviewMonthlySavings').textContent = money(totalMonthly);
