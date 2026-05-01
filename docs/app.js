@@ -23,7 +23,7 @@ function changeTheme(theme) {
   }
 }
 
-const VALID_THEMES = ['indigo', 'sunset', 'forest', 'rose', 'dark'];
+const VALID_THEMES = ['indigo', 'mint', 'forest', 'slate'];
 
 // Restore theme on load
 window.addEventListener('load', () => {
