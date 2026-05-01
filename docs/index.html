@@ -31,18 +31,19 @@
       height: 38px;
       pointer-events: none;
       top: 12px;
-      right: 38%;
+      left: 0;
       z-index: 0;
-      animation: astronaut-float 14s ease-in-out infinite;
+      animation: astronaut-float 30s ease-in-out infinite;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
     }
     @keyframes astronaut-float {
-      0%   { transform: translate(0, 0) rotate(0deg); }
-      20%  { transform: translate(-40px, 8px) rotate(-8deg); }
-      40%  { transform: translate(-70px, -6px) rotate(5deg); }
-      60%  { transform: translate(-30px, 14px) rotate(-4deg); }
-      80%  { transform: translate(20px, 4px) rotate(6deg); }
-      100% { transform: translate(0, 0) rotate(0deg); }
+      0%   { transform: translate(8vw, 4px) rotate(0deg); }
+      16%  { transform: translate(38vw, 26px) rotate(8deg); }
+      33%  { transform: translate(72vw, -2px) rotate(-6deg); }
+      50%  { transform: translate(85vw, 28px) rotate(5deg); }
+      66%  { transform: translate(55vw, -8px) rotate(-7deg); }
+      83%  { transform: translate(22vw, 20px) rotate(4deg); }
+      100% { transform: translate(8vw, 4px) rotate(0deg); }
     }
     @media (prefers-reduced-motion: reduce) {
       .astronaut { animation: none; }
@@ -54,49 +55,57 @@
     }
     .rocket-launcher {
       display: inline-block;
-      position: relative;
       width: 40px;
       height: 40px;
-      animation: rocket-rise 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
     .rocket-launcher svg {
+      display: block;
+    }
+    /* Launching rocket overlay (positioned by JS, flies from page bottom) */
+    .launch-overlay {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      margin-left: -20px;
+      margin-top: -20px;
+      pointer-events: none;
+      z-index: 1000;
+      animation: launch-fly 2s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .launch-overlay svg {
       display: block;
       position: relative;
       z-index: 1;
     }
-    .rocket-launcher::after {
-      content: '';
+    .launch-flame {
       position: absolute;
       left: 50%;
       top: 100%;
-      width: 18px;
-      height: 30px;
+      width: 22px;
+      height: 38px;
       transform: translateX(-50%) translateY(-4px);
-      transform-origin: 50% 0;
       background: radial-gradient(ellipse at 50% 0%, #fff59d 0%, #ffb74d 35%, #ff7043 70%, rgba(255,112,67,0) 100%);
       border-radius: 50% 50% 40% 40%;
       filter: blur(2px);
-      opacity: 0;
-      animation: rocket-flame 1.6s ease-out both;
+      animation: launch-flame 2s ease-out both;
       z-index: 0;
     }
-    @keyframes rocket-rise {
-      0%   { transform: translateY(180px); }
-      55%  { transform: translateY(-10px); }
-      75%  { transform: translateY(4px); }
-      100% { transform: translateY(0); }
+    @keyframes launch-fly {
+      0%   { transform: translateY(calc(100vh - 30px)); }
+      60%  { transform: translateY(-10px); }
+      80%  { transform: translateY(4px); }
+      100% { transform: translateY(0); opacity: 0; }
     }
-    @keyframes rocket-flame {
-      0%   { opacity: 0; transform: translateX(-50%) translateY(-4px) scale(0.4, 0.6); }
-      15%  { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1, 1.1); }
-      55%  { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1.1, 1.3); }
-      80%  { opacity: 0.6; transform: translateX(-50%) translateY(-2px) scale(0.7, 0.6); }
+    @keyframes launch-flame {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(-4px) scale(0.5, 0.6); }
+      10%  { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1, 1.2); }
+      60%  { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1.2, 1.4); }
+      80%  { opacity: 0.5; transform: translateX(-50%) translateY(-2px) scale(0.7, 0.6); }
       100% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.3, 0.1); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .rocket-launcher,
-      .rocket-launcher::after { animation: none; }
-      .rocket-launcher::after { opacity: 0; }
+      .launch-overlay,
+      .launch-flame { display: none; }
     }
     .header-left {
       display: flex;
