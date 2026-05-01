@@ -231,7 +231,20 @@ $('#expenseForm')?.addEventListener('submit', (e) => {
 });
 
 function loadExpenseList() {
-  const expenses = DB.expenses;
+  const expenses = DB.expenses.slice();
+  const sortBy = document.getElementById('expenseSort')?.value || 'default';
+  if (sortBy === 'amount-desc') {
+    expenses.sort((a, b) =>
+      calculateMonthlyValue(b.amount, b.frequency) - calculateMonthlyValue(a.amount, a.frequency));
+  } else if (sortBy === 'amount-asc') {
+    expenses.sort((a, b) =>
+      calculateMonthlyValue(a.amount, a.frequency) - calculateMonthlyValue(b.amount, b.frequency));
+  } else if (sortBy === 'category-asc') {
+    expenses.sort((a, b) => a.category.localeCompare(b.category));
+  } else if (sortBy === 'category-desc') {
+    expenses.sort((a, b) => b.category.localeCompare(a.category));
+  }
+
   const list = $('#expenseList');
   list.innerHTML = '';
 
@@ -242,12 +255,14 @@ function loadExpenseList() {
 
   expenses.forEach(item => {
     const monthlyVal = calculateMonthlyValue(item.amount, item.frequency);
+    const yearlyVal = monthlyVal * 12;
     const div = document.createElement('div');
     div.className = 'history-item';
     div.innerHTML = `
       <div>
         <strong>${item.category}</strong> - ${money(item.amount)} (${item.frequency} • ${item.date})
         <p style="margin: 0.25rem 0 0 0; color: #999; font-size: 0.85rem;">Monthly equivalent: ${money(monthlyVal)}</p>
+        <p style="margin: 0.15rem 0 0 0; color: #999; font-size: 0.85rem;">Yearly equivalent: ${money(yearlyVal)}</p>
       </div>
       <div>
         <button class="btn" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin-bottom: 0.5rem;" onclick="editExpense(${item.expense_id})">Edit</button>

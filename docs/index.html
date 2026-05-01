@@ -257,6 +257,16 @@
           </label>
           <button class="btn" type="submit">Add Expense</button>
         </form>
+        <div style="display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 0.75rem; flex-wrap: wrap;">
+          <small style="color: var(--xp-accent); font-weight: 700; text-transform: uppercase; font-size: 0.75rem;">Sort by</small>
+          <select id="expenseSort" onchange="loadExpenseList()" style="flex: 1; min-width: 160px;">
+            <option value="default">Default (added order)</option>
+            <option value="amount-desc">Amount: high to low</option>
+            <option value="amount-asc">Amount: low to high</option>
+            <option value="category-asc">Category: A to Z</option>
+            <option value="category-desc">Category: Z to A</option>
+          </select>
+        </div>
         <div id="expenseList"></div>
       </div>
 
