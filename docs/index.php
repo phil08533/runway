@@ -1,16 +1,8 @@
-<!-- Cache refresh: 2026-05-01 -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a5fb5" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Runway" />
-  <meta name="description" content="A simple financial planning and budgeting app" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg width='180' height='180' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%230a5fb5' width='40' height='40'/%3E%3Cpath d='M20 2C20 2 10 10 10 20C10 27.7 15 35 20 35C25 35 30 27.7 30 20C30 10 20 2 20 2Z' fill='white'/%3E%3Ccircle cx='20' cy='20' r='6' fill='%230a5fb5'/%3E%3Cpath d='M12 28C12 28 8 32 5 35M28 28C28 28 32 32 35 35' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Runway - Financial Planning</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
@@ -81,7 +73,7 @@
     }
     @media (max-width: 640px) {
       .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
       }
     }
     @media (min-width: 1200px) {
@@ -469,13 +461,5 @@
     }
   </script>
   <script src="app.js"></script>
-  <script>
-    // Register service worker for PWA functionality
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(registration => console.log('Service Worker registered'))
-        .catch(err => console.log('Service Worker registration failed:', err));
-    }
-  </script>
 </body>
 </html>

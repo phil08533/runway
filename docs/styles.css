@@ -1,6 +1,4 @@
 /* ===== THEMES ===== */
-/* Cache refresh: 2026-05-01 - Grid layout 2-column mobile */
-/* Updated: Force GitHub Pages to serve latest version */
 
 /* Blue Theme (Default) */
 :root[data-theme="blue"] {
@@ -279,7 +277,7 @@ section > h2 {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
 }
