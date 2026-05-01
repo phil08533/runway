@@ -37,7 +37,6 @@ function launchRocket() {
   const target = document.querySelector('.header-left .rocket-launcher');
   if (!target) return;
   const r = target.getBoundingClientRect();
-  target.style.opacity = '0';
 
   const overlay = document.createElement('div');
   overlay.className = 'launch-overlay';
@@ -52,10 +51,7 @@ function launchRocket() {
     '<div class="launch-flame"></div>';
   document.body.appendChild(overlay);
 
-  setTimeout(() => {
-    target.style.opacity = '';
-    overlay.remove();
-  }, 2000);
+  setTimeout(() => overlay.remove(), 2000);
 }
 
 window.addEventListener('load', launchRocket);
