@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="runway">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -97,6 +97,47 @@
       z-index: 0;
       animation: astronaut-float 30s ease-in-out infinite;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    }
+    .asteroid {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45));
+    }
+    .asteroid-1 {
+      width: 26px; height: 26px;
+      top: 8px; left: 22%;
+      animation: asteroid-1 42s ease-in-out infinite;
+    }
+    .asteroid-2 {
+      width: 20px; height: 20px;
+      bottom: 6px; left: 60%;
+      animation: asteroid-2 56s ease-in-out infinite;
+    }
+    .asteroid-3 {
+      width: 16px; height: 16px;
+      top: 30px; right: 30%;
+      animation: asteroid-3 48s ease-in-out infinite;
+    }
+    @keyframes asteroid-1 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25%      { transform: translate(20vw, 6px) rotate(120deg); }
+      50%      { transform: translate(40vw, -4px) rotate(220deg); }
+      75%      { transform: translate(12vw, 12px) rotate(310deg); }
+    }
+    @keyframes asteroid-2 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33%      { transform: translate(-25vw, -6px) rotate(-110deg); }
+      66%      { transform: translate(-50vw, 6px) rotate(-260deg); }
+    }
+    @keyframes asteroid-3 {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25%      { transform: translate(-15vw, 8px) rotate(90deg); }
+      50%      { transform: translate(-35vw, -10px) rotate(180deg); }
+      75%      { transform: translate(-10vw, 14px) rotate(280deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .asteroid { animation: none; }
     }
     @keyframes astronaut-float {
       0%   { transform: translate(8vw, 4px) rotate(0deg); }
@@ -291,6 +332,9 @@
   <div class="header-wrap">
     <div class="unified-header">
       <img class="astronaut" src="astronaut.png" alt="" aria-hidden="true" />
+      <img class="asteroid asteroid-1" src="asteroid.png" alt="" aria-hidden="true" />
+      <img class="asteroid asteroid-2" src="asteroid.png" alt="" aria-hidden="true" />
+      <img class="asteroid asteroid-3" src="asteroid.png" alt="" aria-hidden="true" />
       <div class="header-left">
         <span class="rocket-launcher">
           <svg width="40" height="40" viewBox="0 0 40 40" style="fill: white;">
@@ -309,7 +353,8 @@
         <label class="file-btn theme-btn" aria-label="Choose theme">
           Theme
           <select id="themeSelect" onchange="changeTheme(this.value)">
-            <option value="indigo" selected>Indigo</option>
+            <option value="runway" selected>Runway</option>
+            <option value="indigo">Indigo</option>
             <option value="mint">Mint</option>
             <option value="forest">Forest</option>
             <option value="slate">Slate</option>

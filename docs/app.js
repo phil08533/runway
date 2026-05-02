@@ -23,12 +23,12 @@ function changeTheme(theme) {
   }
 }
 
-const VALID_THEMES = ['indigo', 'mint', 'forest', 'slate'];
+const VALID_THEMES = ['runway', 'indigo', 'mint', 'forest', 'slate'];
 
 // Restore theme on load
 window.addEventListener('load', () => {
   const saved = localStorage.getItem('futureworth-theme');
-  changeTheme(VALID_THEMES.includes(saved) ? saved : 'indigo');
+  changeTheme(VALID_THEMES.includes(saved) ? saved : 'runway');
 });
 
 // ===== ROCKET LAUNCH =====
