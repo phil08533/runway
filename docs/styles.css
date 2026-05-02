@@ -1,11 +1,50 @@
 /* ===== THEMES =====
-   Four curated themes. The visible dashboard cards (card-1, card-2,
+   Five curated themes. The visible dashboard cards (card-1, card-2,
    card-5) use vibrant gradients that work with white text; each
    theme tints the page background, header, and accent. card-3,
    card-4, card-6 are unused at runtime (those slots render as
    .highlight-card) but kept for completeness. */
 
-/* Indigo Theme (default) — deep blue-violet, classic */
+/* Runway Theme (default) — uses the space backdrop image on the header */
+:root[data-theme="runway"] {
+  --xp-bg: #f3f4fb;
+  --xp-panel: #ffffff;
+  --xp-text: #1a237e;
+  --xp-border: #5c6bc0;
+  --xp-border-light: #c5cae9;
+  --xp-accent: #3f51b5;
+  --xp-accent-light: #7986cb;
+  --xp-gradient-start: #0a0e2a;
+  --xp-gradient-end: #2a1d50;
+  --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+  --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+  --card-3: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-4: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-5: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-6: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+}
+
+/* Space backdrop on the header + a very slow, subtle wave */
+:root[data-theme="runway"] .unified-header,
+:root[data-theme="runway"] .sub-header {
+  background:
+    linear-gradient(135deg, rgba(8, 12, 38, 0.55) 0%, rgba(38, 22, 70, 0.45) 100%),
+    url('space-bg.jpg');
+  background-size: cover, cover;
+  background-position: center, 50% 50%;
+  background-repeat: no-repeat, no-repeat;
+  animation: runway-bg-wave 75s ease-in-out infinite;
+}
+@keyframes runway-bg-wave {
+  0%, 100% { background-position: center, 50% 50%; }
+  50%      { background-position: center, 53% 47%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="runway"] .unified-header,
+  :root[data-theme="runway"] .sub-header { animation: none; }
+}
+
+/* Indigo Theme — deep blue-violet, classic */
 :root[data-theme="indigo"] {
   --xp-bg: #eef0f8;
   --xp-panel: #ffffff;
@@ -81,17 +120,23 @@
   --card-6: linear-gradient(135deg, #00838f 0%, #006064 100%);
 }
 
-/* Default fallback (matches indigo) */
+/* Default fallback (matches runway) */
 :root {
-  --xp-bg: #eef0f8;
+  --xp-bg: #f3f4fb;
   --xp-panel: #ffffff;
-  --xp-text: #283593;
-  --xp-border: #7986cb;
+  --xp-text: #1a237e;
+  --xp-border: #5c6bc0;
   --xp-border-light: #c5cae9;
   --xp-accent: #3f51b5;
-  --xp-accent-light: #5c6bc0;
-  --xp-gradient-start: #283593;
-  --xp-gradient-end: #5c6bc0;
+  --xp-accent-light: #7986cb;
+  --xp-gradient-start: #0a0e2a;
+  --xp-gradient-end: #2a1d50;
+  --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+  --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+  --card-3: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-4: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-5: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-6: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
 }
 
 * { box-sizing: border-box; }
