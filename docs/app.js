@@ -758,11 +758,13 @@ const TOUR_STEPS = [
 
 let tourIdx = 0;
 let tourActive = false;
+let tourDirection = 'next'; // 'next' | 'prev' — controls slide direction
 
 function startTour() {
   if (tourActive) return;
   tourActive = true;
   tourIdx = 0;
+  tourDirection = 'next';
   document.addEventListener('keydown', tourKeyHandler);
   renderTour();
 }
@@ -776,6 +778,7 @@ function endTour() {
 
 function tourNext() {
   if (tourIdx < TOUR_STEPS.length - 1) {
+    tourDirection = 'next';
     tourIdx++;
     renderTour();
   } else {
@@ -786,6 +789,7 @@ function tourNext() {
 
 function tourPrev() {
   if (tourIdx > 0) {
+    tourDirection = 'prev';
     tourIdx--;
     renderTour();
   }
@@ -841,8 +845,15 @@ function placeTourSpotlight(rect) {
 }
 
 function renderTour() {
+  // Slide the previous card off-screen in the direction matching navigation
+  const oldCard = document.getElementById('tourCard');
+  if (oldCard) {
+    oldCard.id = '';
+    oldCard.classList.remove('tour-card-enter-right', 'tour-card-enter-left');
+    oldCard.classList.add(tourDirection === 'next' ? 'tour-card-exit-left' : 'tour-card-exit-right');
+    setTimeout(() => oldCard.remove(), 320);
+  }
   removeTourSpotlight();
-  document.getElementById('tourCard')?.remove();
 
   const step = TOUR_STEPS[tourIdx];
   if (step.setup) {
@@ -888,7 +899,7 @@ function renderTour() {
 function renderTourCard(step) {
   const card = document.createElement('div');
   card.id = 'tourCard';
-  card.className = 'tour-card';
+  card.className = 'tour-card ' + (tourDirection === 'next' ? 'tour-card-enter-right' : 'tour-card-enter-left');
   const isLast = tourIdx === TOUR_STEPS.length - 1;
   card.innerHTML =
     '<h3>' + step.title + '</h3>' +
