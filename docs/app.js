@@ -899,28 +899,29 @@ function renderTour() {
 
       // Small extra tick so any layout settles before measuring
       setTimeout(() => {
+        let measuredRect = null;
         if (target) {
           const r = target.getBoundingClientRect();
           const pad = 8;
-          const rect = {
+          measuredRect = {
             top:    Math.max(0, r.top - pad),
             left:   Math.max(0, r.left - pad),
             right:  Math.min(window.innerWidth,  r.right + pad),
             bottom: Math.min(window.innerHeight, r.bottom + pad),
           };
-          rect.width  = rect.right  - rect.left;
-          rect.height = rect.bottom - rect.top;
-          placeTourSpotlight(rect);
+          measuredRect.width  = measuredRect.right  - measuredRect.left;
+          measuredRect.height = measuredRect.bottom - measuredRect.top;
+          placeTourSpotlight(measuredRect);
         } else {
           placeTourSpotlight(null);
         }
-        renderTourCard(step);
+        renderTourCard(step, measuredRect);
       }, 40);
     });
   }, setupDelay);
 }
 
-function renderTourCard(step) {
+function renderTourCard(step, targetRect) {
   const card = document.createElement('div');
   card.id = 'tourCard';
   card.className = 'tour-card ' + (tourDirection === 'next' ? 'tour-card-enter-right' : 'tour-card-enter-left');
@@ -936,14 +937,14 @@ function renderTourCard(step) {
     '</div>';
   document.body.appendChild(card);
 
-  // Flip card to top of viewport if the spotlight target is in the
+  // Flip card to the top of the viewport when the target sits in the
   // lower half (where the bottom-anchored card would otherwise overlap).
-  const ring = document.querySelector('.tour-ring');
-  if (ring) {
-    const ringRect = ring.getBoundingClientRect();
+  // We use the actual new target rect, not the ring's transitioning
+  // position which still reads as the previous step's rect.
+  if (targetRect) {
     const cardHeight = card.getBoundingClientRect().height;
-    const bottomRoom = window.innerHeight - ringRect.bottom;
-    const topRoom = ringRect.top;
+    const bottomRoom = window.innerHeight - targetRect.bottom;
+    const topRoom = targetRect.top;
     if (bottomRoom < cardHeight + 32 && topRoom > bottomRoom) {
       card.classList.add('tour-card-top');
     }
