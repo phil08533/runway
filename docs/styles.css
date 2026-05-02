@@ -713,9 +713,9 @@ button:active, .btn:active {
 /* Spacey backdrop divs surround the cutout */
 .tour-mask {
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(63, 81, 181, 0.25), transparent 55%),
-    radial-gradient(ellipse at 80% 80%, rgba(140, 20, 110, 0.18), transparent 55%),
-    linear-gradient(135deg, #050715 0%, #0d1130 50%, #0a0a22 100%);
+    radial-gradient(ellipse at 25% 15%, rgba(63, 81, 181, 0.18), transparent 55%),
+    radial-gradient(ellipse at 78% 82%, rgba(120, 30, 100, 0.14), transparent 55%),
+    #02030f;
   overflow: hidden;
   animation: tour-fade 0.3s ease-out;
 }
@@ -788,20 +788,40 @@ button:active, .btn:active {
   border-radius: 14px;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255,255,255,0.06);
   z-index: 10000;
-  animation: tour-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .tour-card.tour-card-top {
   bottom: auto;
   top: 16px;
-  animation: tour-card-in-top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-@keyframes tour-card-in {
-  from { transform: translate(-50%, 36px); opacity: 0; }
-  to   { transform: translate(-50%, 0); opacity: 1; }
+
+/* Slide animations — direction controlled by classes added in JS */
+.tour-card-enter-right {
+  animation: tour-slide-in-right 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-@keyframes tour-card-in-top {
-  from { transform: translate(-50%, -36px); opacity: 0; }
-  to   { transform: translate(-50%, 0); opacity: 1; }
+.tour-card-enter-left {
+  animation: tour-slide-in-left 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.tour-card-exit-left {
+  animation: tour-slide-out-left 0.32s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.tour-card-exit-right {
+  animation: tour-slide-out-right 0.32s cubic-bezier(0.4, 0, 1, 1) both;
+}
+@keyframes tour-slide-in-right {
+  from { transform: translateX(calc(-50% + 110vw)); opacity: 0; }
+  to   { transform: translateX(-50%); opacity: 1; }
+}
+@keyframes tour-slide-in-left {
+  from { transform: translateX(calc(-50% - 110vw)); opacity: 0; }
+  to   { transform: translateX(-50%); opacity: 1; }
+}
+@keyframes tour-slide-out-left {
+  from { transform: translateX(-50%); opacity: 1; }
+  to   { transform: translateX(calc(-50% - 110vw)); opacity: 0; }
+}
+@keyframes tour-slide-out-right {
+  from { transform: translateX(-50%); opacity: 1; }
+  to   { transform: translateX(calc(-50% + 110vw)); opacity: 0; }
 }
 .tour-card h3 {
   margin: 0 0 8px 0;
@@ -868,5 +888,9 @@ button:active, .btn:active {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tour-card { animation: none; }
+  .tour-card,
+  .tour-card-enter-right,
+  .tour-card-enter-left,
+  .tour-card-exit-left,
+  .tour-card-exit-right { animation: none; }
 }
