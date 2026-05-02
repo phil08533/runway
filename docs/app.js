@@ -900,6 +900,19 @@ function renderTourCard(step) {
       '<button type="button" onclick="tourNext()" class="tour-primary">' + (isLast ? 'Finish' : 'Next →') + '</button>' +
     '</div>';
   document.body.appendChild(card);
+
+  // Flip card to top of viewport if the spotlight target is in the
+  // lower half (where the bottom-anchored card would otherwise overlap).
+  const ring = document.querySelector('.tour-ring');
+  if (ring) {
+    const ringRect = ring.getBoundingClientRect();
+    const cardHeight = card.getBoundingClientRect().height;
+    const bottomRoom = window.innerHeight - ringRect.bottom;
+    const topRoom = ringRect.top;
+    if (bottomRoom < cardHeight + 32 && topRoom > bottomRoom) {
+      card.classList.add('tour-card-top');
+    }
+  }
 }
 
 // Reposition spotlight on resize/scroll while tour is active
