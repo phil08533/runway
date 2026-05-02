@@ -14,7 +14,8 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     .header-wrap {
-      margin: -20px -20px 30px -20px;
+      position: relative;
+      margin: -20px -20px 36px -20px;
     }
     .unified-header {
       position: relative;
@@ -35,15 +36,11 @@
       max-height: 0;
       padding: 0 12px;
       border-top: 1px solid rgba(255,255,255,0.18);
-      display: flex;
-      align-items: center;
-      gap: 10px;
       animation: sub-show 0.7s ease-out 0.3s forwards;
     }
     .sub-tagline {
-      flex: 1 1 auto;
       margin: 0;
-      font-size: clamp(0.65rem, 2.6vw, 0.95rem);
+      font-size: clamp(0.7rem, 3vw, 1rem);
       font-weight: 500;
       font-style: italic;
       letter-spacing: 0.2px;
@@ -51,21 +48,26 @@
       overflow: hidden;
       text-overflow: ellipsis;
       color: rgba(255,255,255,0.95);
+      text-align: center;
     }
     .tour-btn {
-      flex: 0 0 auto;
-      background: var(--xp-accent-light);
+      position: absolute;
+      right: 16px;
+      bottom: -16px;
+      z-index: 20;
+      background: linear-gradient(135deg, #ffb74d 0%, #f57c00 50%, #e65100 100%);
       color: white;
       border: 2px solid white;
       border-radius: 999px;
-      padding: 5px 12px;
+      padding: 7px 16px;
       font-weight: 700;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
-      animation: tour-pulse 2.4s ease-in-out infinite;
+      box-shadow: 0 4px 14px rgba(245, 124, 0, 0.45), 0 2px 6px rgba(0,0,0,0.15);
+      animation: sub-show 0.7s ease-out 0.5s both, tour-pulse 2.4s ease-in-out 1.3s infinite;
       transition: transform 0.15s ease;
+      letter-spacing: 0.2px;
     }
     .tour-btn:hover {
       transform: scale(1.05);
@@ -74,16 +76,16 @@
       transform: scale(0.97);
     }
     @keyframes sub-show {
-      from { max-height: 0; padding-top: 0; padding-bottom: 0; }
-      to   { max-height: 80px; padding-top: 8px; padding-bottom: 8px; }
+      from { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
+      to   { max-height: 80px; padding-top: 8px; padding-bottom: 8px; opacity: 1; }
     }
     @keyframes tour-pulse {
-      0%, 100% { box-shadow: 0 2px 10px rgba(0,0,0,0.25), 0 0 0 0 rgba(255,255,255,0.4); }
-      50%      { box-shadow: 0 2px 14px rgba(0,0,0,0.3), 0 0 0 6px rgba(255,255,255,0); }
+      0%, 100% { box-shadow: 0 4px 14px rgba(245, 124, 0, 0.45), 0 0 0 0 rgba(255, 152, 0, 0.55), 0 2px 6px rgba(0,0,0,0.15); }
+      50%      { box-shadow: 0 4px 18px rgba(245, 124, 0, 0.55), 0 0 0 8px rgba(255, 152, 0, 0), 0 2px 6px rgba(0,0,0,0.15); }
     }
     @media (prefers-reduced-motion: reduce) {
       .sub-header { animation: none; max-height: 80px; padding: 8px 12px; }
-      .tour-btn { animation: none; }
+      .tour-btn { animation: none; opacity: 1; }
     }
     .astronaut {
       position: absolute;
@@ -318,8 +320,8 @@
     </div>
     <div class="sub-header">
       <p class="sub-tagline">Calculate your runway &mdash; let your budget take-off!</p>
-      <button class="tour-btn" type="button" onclick="startTour()">Click here for a guided tour</button>
     </div>
+    <button class="tour-btn" type="button" onclick="startTour()">Click here for a guided tour</button>
   </div>
 
   <main class="container">

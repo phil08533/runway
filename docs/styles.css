@@ -710,20 +710,70 @@ button:active, .btn:active {
   transition: box-shadow 0.25s ease;
 }
 
+/* Spacey backdrop divs surround the cutout */
 .tour-mask {
-  animation: tour-fade 0.25s ease-out;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(63, 81, 181, 0.25), transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(140, 20, 110, 0.18), transparent 55%),
+    linear-gradient(135deg, #050715 0%, #0d1130 50%, #0a0a22 100%);
+  overflow: hidden;
+  animation: tour-fade 0.3s ease-out;
 }
+.tour-mask::before,
+.tour-mask::after {
+  content: '';
+  position: absolute;
+  inset: -200px;
+  pointer-events: none;
+}
+/* Drifting starfield (small white pinpoints) */
+.tour-mask::before {
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.95), transparent 60%),
+    radial-gradient(1px 1px at 28% 62%, rgba(255,255,255,0.8), transparent 60%),
+    radial-gradient(1.5px 1.5px at 47% 30%, rgba(255,255,255,1), transparent 60%),
+    radial-gradient(1px 1px at 62% 78%, rgba(255,255,255,0.7), transparent 60%),
+    radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.85), transparent 60%),
+    radial-gradient(2px 2px at 88% 50%, rgba(255,255,255,0.95), transparent 60%),
+    radial-gradient(1px 1px at 33% 90%, rgba(255,255,255,0.6), transparent 60%),
+    radial-gradient(1px 1px at 91% 90%, rgba(255,255,255,0.7), transparent 60%);
+  background-size: 220px 220px;
+  background-repeat: repeat;
+  animation: tour-drift 90s linear infinite;
+}
+/* Bigger twinkling colored stars */
+.tour-mask::after {
+  background-image:
+    radial-gradient(1.6px 1.6px at 22% 70%, #ffd54f, transparent 60%),
+    radial-gradient(2px 2px at 70% 22%, #90caf9, transparent 60%),
+    radial-gradient(1.4px 1.4px at 8% 44%, #ffeb3b, transparent 60%),
+    radial-gradient(1.8px 1.8px at 55% 85%, #f48fb1, transparent 60%),
+    radial-gradient(2.2px 2.2px at 84% 60%, #b39ddb, transparent 60%);
+  background-size: 360px 360px;
+  background-repeat: repeat;
+  animation: tour-drift 130s linear infinite reverse, tour-twinkle 5s ease-in-out infinite;
+  opacity: 0.65;
+}
+@keyframes tour-drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(220px, 220px); }
+}
+@keyframes tour-twinkle {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.85; }
+}
+
 .tour-ring {
   border-radius: 10px;
-  box-shadow: 0 0 0 4px var(--xp-accent-light);
-  animation: tour-fade 0.25s ease-out, tour-ring-pulse 1.6s ease-in-out 0.3s infinite;
+  box-shadow: 0 0 0 4px var(--xp-accent-light), 0 0 24px 6px rgba(255,255,255,0.18);
+  animation: tour-fade 0.3s ease-out, tour-ring-pulse 1.6s ease-in-out 0.3s infinite;
 }
 @keyframes tour-ring-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px var(--xp-accent-light), 0 0 0 0 rgba(255,255,255,0); }
-  50%      { box-shadow: 0 0 0 5px var(--xp-accent-light), 0 0 0 8px rgba(255,255,255,0.18); }
+  0%, 100% { box-shadow: 0 0 0 4px var(--xp-accent-light), 0 0 18px 4px rgba(255,255,255,0.18); }
+  50%      { box-shadow: 0 0 0 6px var(--xp-accent-light), 0 0 28px 10px rgba(255,255,255,0.35); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tour-mask, .tour-ring { animation: none; }
+  .tour-mask, .tour-mask::before, .tour-mask::after, .tour-ring { animation: none; }
 }
 
 .tour-card {
@@ -736,12 +786,21 @@ button:active, .btn:active {
   color: #2c2c3a;
   padding: 18px 20px 14px;
   border-radius: 14px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255,255,255,0.06);
   z-index: 10000;
-  animation: tour-card-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: tour-card-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tour-card.tour-card-top {
+  bottom: auto;
+  top: 16px;
+  animation: tour-card-in-top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes tour-card-in {
-  from { transform: translate(-50%, 30px); opacity: 0; }
+  from { transform: translate(-50%, 36px); opacity: 0; }
+  to   { transform: translate(-50%, 0); opacity: 1; }
+}
+@keyframes tour-card-in-top {
+  from { transform: translate(-50%, -36px); opacity: 0; }
   to   { transform: translate(-50%, 0); opacity: 1; }
 }
 .tour-card h3 {
@@ -779,32 +838,35 @@ button:active, .btn:active {
   border: 1px solid var(--xp-border);
   background: white;
   color: var(--xp-text);
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .tour-controls button.tour-primary {
   background: var(--xp-accent);
   color: white;
   border-color: var(--xp-accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
-.tour-controls button:hover {
+.tour-controls button:hover:not([disabled]) {
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 .tour-controls button[disabled] {
   opacity: 0.4;
   cursor: not-allowed;
-  transform: none;
 }
 
 @media (max-width: 700px) {
   .tour-card {
     bottom: 8px;
     padding: 14px 16px 12px;
+    width: calc(100vw - 16px);
   }
+  .tour-card.tour-card-top { top: 8px; }
   .tour-card h3 { font-size: 0.95rem; }
   .tour-card p { font-size: 0.83rem; }
   .tour-controls button { padding: 6px 10px; font-size: 0.78rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tour-backdrop, .tour-card { animation: none; }
+  .tour-card { animation: none; }
 }
