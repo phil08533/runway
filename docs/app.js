@@ -669,6 +669,264 @@ if ('serviceWorker' in navigator) {
     .catch(err => console.log('SW registration failed:', err));
 }
 
+// ===== GUIDED TOUR =====
+const TOUR_STEPS = [
+  {
+    title: 'Welcome to Runway 🚀',
+    body:
+      '<p>This quick tour walks through everything in the app: adding income, expenses, and savings goals, saving and loading your data, calculating your runway, and switching themes.</p>' +
+      '<p>You can hit <strong>Skip</strong> at any time or use <strong>Back</strong> to revisit a step. Use the arrow keys or Esc as well.</p>'
+  },
+  {
+    title: 'Step 1 — Add your income',
+    body:
+      '<p>Start with every source of money coming in: salary, freelance, dividends, side hustle.</p>' +
+      '<p>Pick the right <strong>frequency</strong> so we can compute the real monthly total — the app converts everything to a monthly equivalent for the dashboard.</p>',
+    setup: () => switchTab('income-tab'),
+    target: () => document.querySelector('#incomeForm')
+  },
+  {
+    title: 'Step 2 — Add your expenses',
+    body:
+      '<p>List every expense: rent, groceries, subscriptions, bills, the lot. Each gets a category, amount, frequency, and date.</p>' +
+      '<p><strong>The more in-depth, the more accurate your runway.</strong> Missing a recurring bill makes the runway look too optimistic.</p>' +
+      '<p>Each entry shows its monthly and yearly equivalent below it, and the Sort dropdown helps you scan them by amount or category.</p>',
+    setup: () => switchTab('expense-tab'),
+    target: () => document.querySelector('#expenseForm')
+  },
+  {
+    title: 'Step 3 — Add savings goals',
+    body:
+      '<p>Track what you\'re saving <em>toward</em> — emergency fund, vacation, down payment.</p>' +
+      '<p>Tick <strong>Include annual gain %</strong> if the goal is parked somewhere that earns interest (high-yield account, index fund). The app applies that gain to the yearly total.</p>',
+    setup: () => switchTab('savings-tab'),
+    target: () => document.querySelector('#savingsGoalForm')
+  },
+  {
+    title: 'Step 4 — Save a snapshot',
+    body:
+      '<p><strong>Snapshots</strong> save your current setup with a label so you can compare scenarios — "Current Plan", "If I Move", "After Raise".</p>' +
+      '<p>They live <em>inside</em> the app, in your browser storage. Use them for quick what-if comparisons without losing your main numbers.</p>',
+    setup: () => switchTab('budgets-tab'),
+    target: () => document.querySelector('#budgets-tab')
+  },
+  {
+    title: 'Step 5 — Save to a file',
+    body:
+      '<p>The <strong>Save</strong> button up top downloads everything — income, expenses, goals, snapshots — to a JSON file on your device.</p>' +
+      '<p>Use this for a real backup. Browser storage can be cleared; a JSON file you keep is permanent.</p>',
+    target: () => Array.from(document.querySelectorAll('.header-right .file-btn')).find(b => b.textContent.trim() === 'Save'),
+    scrollToTop: true
+  },
+  {
+    title: 'Step 6 — Load from a file',
+    body:
+      '<p>The <strong>Load</strong> button reads a JSON file you saved before and restores all your data.</p>' +
+      '<p>Handy for moving between devices, restoring after clearing browser data, or sharing a setup with someone.</p>',
+    target: () => Array.from(document.querySelectorAll('.header-right .file-btn')).find(b => b.textContent.trim() === 'Load'),
+    scrollToTop: true
+  },
+  {
+    title: 'Step 7 — Calculate your runway',
+    body:
+      '<p>This is the headline number. Type your <strong>current savings</strong> here and tap Calculate Runway.</p>' +
+      '<p>Runway = how many months you can survive on those savings if income stopped, based on your monthly expenses. Bigger number = more breathing room.</p>',
+    setup: () => { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); switchTab('income-tab'); },
+    target: () => document.querySelector('#runwaySection')
+  },
+  {
+    title: 'Step 8 — Pick a theme',
+    body:
+      '<p>The <strong>Theme</strong> button cycles between four palettes: Indigo, Mint, Forest, and Slate. Pick whichever matches your mood.</p>' +
+      '<p>Your choice is saved in your browser, so you\'ll see the same theme next time.</p>',
+    target: () => document.querySelector('.theme-btn'),
+    scrollToTop: true
+  },
+  {
+    title: 'You\'re all set! 🎉',
+    body:
+      '<p>That\'s the whole tour. Quick recap:</p>' +
+      '<ul style="margin: 0 0 14px 18px; padding: 0; font-size: 0.88rem; line-height: 1.6;">' +
+        '<li>Add income, expenses, and savings goals in their tabs</li>' +
+        '<li>Snapshots compare scenarios inside the app</li>' +
+        '<li>Save / Load handle real file backups</li>' +
+        '<li>Runway tells you how many months you can coast</li>' +
+      '</ul>' +
+      '<p>Tap <strong>Click here for a guided tour</strong> any time to run through this again.</p>'
+  }
+];
+
+let tourIdx = 0;
+let tourActive = false;
+
+function startTour() {
+  if (tourActive) return;
+  tourActive = true;
+  tourIdx = 0;
+  document.addEventListener('keydown', tourKeyHandler);
+  renderTour();
+}
+
+function endTour() {
+  tourActive = false;
+  removeTourSpotlight();
+  document.getElementById('tourCard')?.remove();
+  document.removeEventListener('keydown', tourKeyHandler);
+}
+
+function tourNext() {
+  if (tourIdx < TOUR_STEPS.length - 1) {
+    tourIdx++;
+    renderTour();
+  } else {
+    endTour();
+    celebrate();
+  }
+}
+
+function tourPrev() {
+  if (tourIdx > 0) {
+    tourIdx--;
+    renderTour();
+  }
+}
+
+function tourKeyHandler(e) {
+  if (!tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); endTour(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); tourNext(); }
+  else if (e.key === 'ArrowLeft')  { e.preventDefault(); tourPrev(); }
+}
+
+function removeTourSpotlight() {
+  document.querySelectorAll('.tour-mask, .tour-ring').forEach(el => el.remove());
+}
+
+function placeTourSpotlight(rect) {
+  removeTourSpotlight();
+  const dim = 'rgba(10, 14, 30, 0.55)';
+  const make = (styles) => {
+    const d = document.createElement('div');
+    d.className = 'tour-mask';
+    Object.assign(d.style, {
+      position: 'fixed', background: dim, zIndex: '9000', pointerEvents: 'auto'
+    }, styles);
+    return d;
+  };
+
+  if (!rect) {
+    const full = make({ inset: '0' });
+    document.body.appendChild(full);
+    return;
+  }
+
+  const top    = make({ top: '0', left: '0', right: '0', height: rect.top + 'px' });
+  const bottom = make({ top: rect.bottom + 'px', left: '0', right: '0', bottom: '0' });
+  const left   = make({ top: rect.top + 'px', left: '0', width: rect.left + 'px', height: rect.height + 'px' });
+  const right  = make({ top: rect.top + 'px', left: rect.right + 'px', right: '0', height: rect.height + 'px' });
+
+  const ring = document.createElement('div');
+  ring.className = 'tour-ring';
+  Object.assign(ring.style, {
+    position: 'fixed',
+    top: rect.top + 'px',
+    left: rect.left + 'px',
+    width: rect.width + 'px',
+    height: rect.height + 'px',
+    pointerEvents: 'none',
+    zIndex: '9001'
+  });
+
+  document.body.append(top, bottom, left, right, ring);
+}
+
+function renderTour() {
+  removeTourSpotlight();
+  document.getElementById('tourCard')?.remove();
+
+  const step = TOUR_STEPS[tourIdx];
+  if (step.setup) {
+    try { step.setup(); } catch (e) { /* swallow */ }
+  }
+  if (step.scrollToTop) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const target = step.target ? step.target() : null;
+      const proceed = () => {
+        if (target) {
+          const r = target.getBoundingClientRect();
+          const pad = 8;
+          const rect = {
+            top:    Math.max(0, r.top - pad),
+            left:   Math.max(0, r.left - pad),
+            right:  Math.min(window.innerWidth,  r.right + pad),
+            bottom: Math.min(window.innerHeight, r.bottom + pad),
+          };
+          rect.width  = rect.right  - rect.left;
+          rect.height = rect.bottom - rect.top;
+          placeTourSpotlight(rect);
+        } else {
+          placeTourSpotlight(null);
+        }
+        renderTourCard(step);
+      };
+      if (target && !step.scrollToTop) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(proceed, 380);
+      } else if (step.scrollToTop) {
+        setTimeout(proceed, 380);
+      } else {
+        proceed();
+      }
+    }, 60);
+  });
+}
+
+function renderTourCard(step) {
+  const card = document.createElement('div');
+  card.id = 'tourCard';
+  card.className = 'tour-card';
+  const isLast = tourIdx === TOUR_STEPS.length - 1;
+  card.innerHTML =
+    '<h3>' + step.title + '</h3>' +
+    step.body +
+    '<div class="tour-controls">' +
+      '<span class="tour-step">' + (tourIdx + 1) + ' of ' + TOUR_STEPS.length + '</span>' +
+      '<button type="button" onclick="endTour()">Skip</button>' +
+      '<button type="button" onclick="tourPrev()" ' + (tourIdx === 0 ? 'disabled' : '') + '>Back</button>' +
+      '<button type="button" onclick="tourNext()" class="tour-primary">' + (isLast ? 'Finish' : 'Next →') + '</button>' +
+    '</div>';
+  document.body.appendChild(card);
+}
+
+// Reposition spotlight on resize/scroll while tour is active
+let tourRepositionTimer = null;
+function tourReposition() {
+  if (!tourActive) return;
+  clearTimeout(tourRepositionTimer);
+  tourRepositionTimer = setTimeout(() => {
+    const step = TOUR_STEPS[tourIdx];
+    const target = step.target ? step.target() : null;
+    if (!target) return;
+    const r = target.getBoundingClientRect();
+    const pad = 8;
+    const rect = {
+      top:    Math.max(0, r.top - pad),
+      left:   Math.max(0, r.left - pad),
+      right:  Math.min(window.innerWidth,  r.right + pad),
+      bottom: Math.min(window.innerHeight, r.bottom + pad),
+    };
+    rect.width  = rect.right  - rect.left;
+    rect.height = rect.bottom - rect.top;
+    placeTourSpotlight(rect);
+  }, 120);
+}
+window.addEventListener('resize', tourReposition);
+window.addEventListener('scroll', tourReposition, { passive: true });
+
 // ===== INITIALIZE =====
 window.addEventListener('load', () => {
   const today = new Date().toISOString().split('T')[0];
