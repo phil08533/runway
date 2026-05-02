@@ -802,50 +802,68 @@ function tourKeyHandler(e) {
   else if (e.key === 'ArrowLeft')  { e.preventDefault(); tourPrev(); }
 }
 
-function removeTourSpotlight() {
-  document.querySelectorAll('.tour-mask, .tour-ring').forEach(el => el.remove());
+// Persistent spotlight elements: created once on tour start, reused
+// across every step. Their top/left/width/height are CSS-transitioned
+// so the cutout morphs smoothly between targets.
+let tourSpot = null;
+
+function ensureTourSpotlight() {
+  if (tourSpot) return;
+  const make = () => {
+    const d = document.createElement('div');
+    d.className = 'tour-mask';
+    return d;
+  };
+  tourSpot = {
+    top:    make(),
+    bottom: make(),
+    left:   make(),
+    right:  make(),
+    ring:   document.createElement('div')
+  };
+  tourSpot.ring.className = 'tour-ring';
+  // Start everything fully covering the screen with the ring hidden,
+  // so the cutout opens FROM nothing.
+  setSpotlightFullCover();
+  document.body.append(tourSpot.top, tourSpot.bottom, tourSpot.left, tourSpot.right, tourSpot.ring);
+}
+
+function setSpotlightFullCover() {
+  if (!tourSpot) return;
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  Object.assign(tourSpot.top.style,    { top: '0px', left: '0px', width: W + 'px', height: H + 'px' });
+  Object.assign(tourSpot.bottom.style, { top: H + 'px', left: '0px', width: W + 'px', height: '0px' });
+  Object.assign(tourSpot.left.style,   { top: '0px', left: '0px', width: '0px', height: '0px' });
+  Object.assign(tourSpot.right.style,  { top: '0px', left: W + 'px', width: '0px', height: '0px' });
+  tourSpot.ring.style.opacity = '0';
 }
 
 function placeTourSpotlight(rect) {
-  removeTourSpotlight();
-  const dim = 'rgba(10, 14, 30, 0.55)';
-  const make = (styles) => {
-    const d = document.createElement('div');
-    d.className = 'tour-mask';
-    Object.assign(d.style, {
-      position: 'fixed', background: dim, zIndex: '9000', pointerEvents: 'auto'
-    }, styles);
-    return d;
-  };
-
+  ensureTourSpotlight();
   if (!rect) {
-    const full = make({ inset: '0' });
-    document.body.appendChild(full);
+    setSpotlightFullCover();
     return;
   }
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  Object.assign(tourSpot.top.style,    { top: '0px', left: '0px', width: W + 'px', height: rect.top + 'px' });
+  Object.assign(tourSpot.bottom.style, { top: rect.bottom + 'px', left: '0px', width: W + 'px', height: Math.max(0, H - rect.bottom) + 'px' });
+  Object.assign(tourSpot.left.style,   { top: rect.top + 'px', left: '0px', width: rect.left + 'px', height: rect.height + 'px' });
+  Object.assign(tourSpot.right.style,  { top: rect.top + 'px', left: rect.right + 'px', width: Math.max(0, W - rect.right) + 'px', height: rect.height + 'px' });
+  Object.assign(tourSpot.ring.style,   { top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px', height: rect.height + 'px', opacity: '1' });
+}
 
-  const top    = make({ top: '0', left: '0', right: '0', height: rect.top + 'px' });
-  const bottom = make({ top: rect.bottom + 'px', left: '0', right: '0', bottom: '0' });
-  const left   = make({ top: rect.top + 'px', left: '0', width: rect.left + 'px', height: rect.height + 'px' });
-  const right  = make({ top: rect.top + 'px', left: rect.right + 'px', right: '0', height: rect.height + 'px' });
-
-  const ring = document.createElement('div');
-  ring.className = 'tour-ring';
-  Object.assign(ring.style, {
-    position: 'fixed',
-    top: rect.top + 'px',
-    left: rect.left + 'px',
-    width: rect.width + 'px',
-    height: rect.height + 'px',
-    pointerEvents: 'none',
-    zIndex: '9001'
-  });
-
-  document.body.append(top, bottom, left, right, ring);
+function removeTourSpotlight() {
+  if (!tourSpot) return;
+  Object.values(tourSpot).forEach(el => el.remove());
+  tourSpot = null;
 }
 
 function renderTour() {
-  // Slide the previous card off-screen in the direction matching navigation
+  const step = TOUR_STEPS[tourIdx];
+
+  // 1. Slide the previous card off-screen in the navigation direction
   const oldCard = document.getElementById('tourCard');
   if (oldCard) {
     oldCard.id = '';
@@ -853,20 +871,34 @@ function renderTour() {
     oldCard.classList.add(tourDirection === 'next' ? 'tour-card-exit-left' : 'tour-card-exit-right');
     setTimeout(() => oldCard.remove(), 320);
   }
-  removeTourSpotlight();
 
-  const step = TOUR_STEPS[tourIdx];
-  if (step.setup) {
-    try { step.setup(); } catch (e) { /* swallow */ }
-  }
-  if (step.scrollToTop) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 2. Make sure the persistent spotlight exists, then close the cutout.
+  //    The dim divs CSS-transition smoothly back to full coverage,
+  //    hiding the upcoming tab swap / scroll under solid space.
+  ensureTourSpotlight();
+  if (oldCard) {
+    placeTourSpotlight(null);
   }
 
-  requestAnimationFrame(() => {
-    setTimeout(() => {
+  const setupDelay = oldCard ? 280 : 20;
+
+  setTimeout(() => {
+    // 3. Tab swap, scroll - all hidden under the cover
+    if (step.setup) {
+      try { step.setup(); } catch (e) { /* swallow */ }
+    }
+    if (step.scrollToTop) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+
+    requestAnimationFrame(() => {
       const target = step.target ? step.target() : null;
-      const proceed = () => {
+      if (target && !step.scrollToTop) {
+        target.scrollIntoView({ behavior: 'auto', block: 'center' });
+      }
+
+      // Small extra tick so any layout settles before measuring
+      setTimeout(() => {
         if (target) {
           const r = target.getBoundingClientRect();
           const pad = 8;
@@ -883,17 +915,9 @@ function renderTour() {
           placeTourSpotlight(null);
         }
         renderTourCard(step);
-      };
-      if (target && !step.scrollToTop) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(proceed, 380);
-      } else if (step.scrollToTop) {
-        setTimeout(proceed, 380);
-      } else {
-        proceed();
-      }
-    }, 60);
-  });
+      }, 40);
+    });
+  }, setupDelay);
 }
 
 function renderTourCard(step) {
