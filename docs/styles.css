@@ -24,9 +24,10 @@
   --card-6: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
 }
 
-/* Space backdrop on the header + a very slow, subtle wave */
-:root[data-theme="runway"] .unified-header,
-:root[data-theme="runway"] .sub-header {
+/* Space backdrop on the Runway header. Sub-header keeps the
+   default gradient (driven by --xp-gradient-* vars) so the
+   tagline strip looks like the rest of the themes. */
+:root[data-theme="runway"] .unified-header {
   background:
     linear-gradient(135deg, rgba(8, 12, 38, 0.55) 0%, rgba(38, 22, 70, 0.45) 100%),
     url('space-bg.jpg');
@@ -40,27 +41,42 @@
   50%      { background-position: center, 53% 47%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root[data-theme="runway"] .unified-header,
-  :root[data-theme="runway"] .sub-header { animation: none; }
+  :root[data-theme="runway"] .unified-header { animation: none; }
 }
 
-/* Indigo Theme — deep blue-violet, classic */
-:root[data-theme="indigo"] {
-  --xp-bg: #eef0f8;
+/* Deep Space Theme — black-hole backdrop on the header */
+:root[data-theme="deep-space"] {
+  --xp-bg: #f0f1f8;
   --xp-panel: #ffffff;
-  --xp-text: #283593;
-  --xp-border: #7986cb;
+  --xp-text: #1a237e;
+  --xp-border: #5c6bc0;
   --xp-border-light: #c5cae9;
-  --xp-accent: #3f51b5;
-  --xp-accent-light: #5c6bc0;
-  --xp-gradient-start: #283593;
-  --xp-gradient-end: #5c6bc0;
+  --xp-accent: #5e35b1;
+  --xp-accent-light: #9575cd;
+  --xp-gradient-start: #1a0b3a;
+  --xp-gradient-end: #3d1a6a;
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
-  --card-3: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
-  --card-4: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
-  --card-5: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
-  --card-6: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
+  --card-3: linear-gradient(135deg, #7e57c2 0%, #4527a0 100%);
+  --card-4: linear-gradient(135deg, #7e57c2 0%, #4527a0 100%);
+  --card-5: linear-gradient(135deg, #7e57c2 0%, #4527a0 100%);
+  --card-6: linear-gradient(135deg, #7e57c2 0%, #4527a0 100%);
+}
+:root[data-theme="deep-space"] .unified-header {
+  background:
+    linear-gradient(135deg, rgba(10, 5, 30, 0.5) 0%, rgba(45, 15, 80, 0.4) 100%),
+    url('deep-space.jpg');
+  background-size: cover, cover;
+  background-position: center, 50% 50%;
+  background-repeat: no-repeat, no-repeat;
+  animation: deep-space-wave 90s ease-in-out infinite;
+}
+@keyframes deep-space-wave {
+  0%, 100% { background-position: center, 48% 50%; }
+  50%      { background-position: center, 52% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="deep-space"] .unified-header { animation: none; }
 }
 
 /* Mint Theme — fresh teal, cool */

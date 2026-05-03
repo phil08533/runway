@@ -354,7 +354,7 @@
           Theme
           <select id="themeSelect" onchange="changeTheme(this.value)">
             <option value="runway" selected>Runway</option>
-            <option value="indigo">Indigo</option>
+            <option value="deep-space">Deep Space</option>
             <option value="mint">Mint</option>
             <option value="forest">Forest</option>
             <option value="slate">Slate</option>
@@ -375,34 +375,24 @@
       <h2>Financial Overview <span class="help-icon" role="button" tabindex="0" data-tip="Complete summary of your income, expenses, and savings" aria-label="What is this?">?</span></h2>
       <div class="dashboard-grid">
         <article class="card">
-          <h3>Monthly Income</h3>
+          <h3>Income</h3>
           <p id="incomeTotal">$0.00</p>
-          <small>All income sources</small>
+          <small><span id="yearlyTotal">$0.00</span> / year</small>
         </article>
         <article class="card">
-          <h3>Monthly Expenses</h3>
+          <h3>Expenses</h3>
           <p id="expenseTotal">$0.00</p>
-          <small>Total spending</small>
+          <small><span id="annualExpenseTotal">$0.00</span> / year</small>
         </article>
         <article class="card highlight-card">
-          <h3>Monthly Income After Expenses</h3>
+          <h3>Income After Expenses</h3>
           <p id="savingsTotal">$0.00</p>
-          <small>Income minus expenses</small>
+          <small><span id="annualAfterExpenses">$0.00</span> / year</small>
         </article>
         <article class="card highlight-card">
-          <h3>Annual Income</h3>
-          <p id="yearlyTotal">$0.00</p>
-          <small>Yearly total</small>
-        </article>
-        <article class="card">
-          <h3>Total Monthly Savings Goals</h3>
+          <h3>Savings Goals</h3>
           <p id="overviewMonthlySavings">$0.00</p>
-          <small>All savings goals</small>
-        </article>
-        <article class="card highlight-card">
-          <h3>Annual Savings</h3>
-          <p id="overviewAnnualSavings">$0.00</p>
-          <small>Yearly savings with gains</small>
+          <small><span id="overviewAnnualSavings">$0.00</span> / year (with gains)</small>
         </article>
       </div>
     </section>
