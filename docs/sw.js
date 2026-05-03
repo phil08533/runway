@@ -1,4 +1,4 @@
-const CACHE_NAME = 'runway-v23';
+const CACHE_NAME = 'runway-v24';
 const urlsToCache = [
   './',
   './index.html',
