@@ -354,7 +354,7 @@
           Theme
           <select id="themeSelect" onchange="changeTheme(this.value)">
             <option value="runway" selected>Runway</option>
-            <option value="indigo">Indigo</option>
+            <option value="deep-space">Deep Space</option>
             <option value="mint">Mint</option>
             <option value="forest">Forest</option>
             <option value="slate">Slate</option>
@@ -374,6 +374,7 @@
     <section>
       <h2>Financial Overview <span class="help-icon" role="button" tabindex="0" data-tip="Complete summary of your income, expenses, and savings" aria-label="What is this?">?</span></h2>
       <div class="dashboard-grid">
+        <!-- Monthly raw inputs -->
         <article class="card">
           <h3>Monthly Income</h3>
           <p id="incomeTotal">$0.00</p>
@@ -384,20 +385,33 @@
           <p id="expenseTotal">$0.00</p>
           <small>Total spending</small>
         </article>
+        <!-- Monthly derived + savings -->
         <article class="card highlight-card">
           <h3>Monthly Income After Expenses</h3>
           <p id="savingsTotal">$0.00</p>
           <small>Income minus expenses</small>
         </article>
+        <article class="card">
+          <h3>Total Monthly Savings Goals</h3>
+          <p id="overviewMonthlySavings">$0.00</p>
+          <small>All savings goals</small>
+        </article>
+        <!-- Annual raw -->
         <article class="card highlight-card">
           <h3>Annual Income</h3>
           <p id="yearlyTotal">$0.00</p>
           <small>Yearly total</small>
         </article>
-        <article class="card">
-          <h3>Total Monthly Savings Goals</h3>
-          <p id="overviewMonthlySavings">$0.00</p>
-          <small>All savings goals</small>
+        <article class="card highlight-card">
+          <h3>Annual Expenses</h3>
+          <p id="annualExpenseTotal">$0.00</p>
+          <small>Yearly spending</small>
+        </article>
+        <!-- Annual derived + savings -->
+        <article class="card highlight-card">
+          <h3>Annual Income After Expenses</h3>
+          <p id="annualAfterExpenses">$0.00</p>
+          <small>Yearly net income</small>
         </article>
         <article class="card highlight-card">
           <h3>Annual Savings</h3>

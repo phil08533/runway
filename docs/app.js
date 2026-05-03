@@ -23,7 +23,7 @@ function changeTheme(theme) {
   }
 }
 
-const VALID_THEMES = ['runway', 'indigo', 'mint', 'forest', 'slate'];
+const VALID_THEMES = ['runway', 'deep-space', 'mint', 'forest', 'slate'];
 
 // Restore theme on load
 window.addEventListener('load', () => {
@@ -157,14 +157,14 @@ function loadDashboard() {
   const savingsTotal = incomeTotal - expenseTotal;
   const yearlyTotal = incomeTotal * 12;
   const annualExpenses = expenseTotal * 12;
+  const annualAfterExpenses = savingsTotal * 12;
 
   $('#incomeTotal').textContent = money(incomeTotal);
   $('#expenseTotal').textContent = money(expenseTotal);
   $('#savingsTotal').textContent = money(savingsTotal);
   $('#yearlyTotal').textContent = money(yearlyTotal);
-  if ($('#annualExpenseTotal')) {
-    $('#annualExpenseTotal').textContent = money(annualExpenses);
-  }
+  $('#annualExpenseTotal') && ($('#annualExpenseTotal').textContent = money(annualExpenses));
+  $('#annualAfterExpenses') && ($('#annualAfterExpenses').textContent = money(annualAfterExpenses));
 
   loadIncomeList();
   loadExpenseList();
