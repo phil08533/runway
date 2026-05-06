@@ -1,4 +1,4 @@
-const CACHE_NAME = 'runway-v27';
+const CACHE_NAME = 'runway-v28';
 const urlsToCache = [
   './',
   './index.html',
@@ -10,7 +10,8 @@ const urlsToCache = [
   './space-bg.jpg',
   './deep-space.jpg',
   './portal.jpg',
-  './cosmic.jpg'
+  './cosmic.jpg',
+  './azure.jpg'
 ];
 
 self.addEventListener('install', event => {

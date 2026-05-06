@@ -79,23 +79,39 @@
   :root[data-theme="deep-space"] .unified-header { animation: none; }
 }
 
-/* Mint Theme — fresh teal, cool */
-:root[data-theme="mint"] {
-  --xp-bg: #e6f4f1;
+/* Azure Theme — bright blue cosmic */
+:root[data-theme="azure"] {
+  --xp-bg: #ebf3fb;
   --xp-panel: #ffffff;
-  --xp-text: #00695c;
-  --xp-border: #4db6ac;
-  --xp-border-light: #b2dfdb;
-  --xp-accent: #00897b;
-  --xp-accent-light: #26a69a;
-  --xp-gradient-start: #004d40;
-  --xp-gradient-end: #26a69a;
-  --card-1: linear-gradient(135deg, #26a69a 0%, #00695c 100%);
-  --card-2: linear-gradient(135deg, #ff7043 0%, #d84315 100%);
-  --card-3: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
-  --card-4: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
-  --card-5: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
-  --card-6: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
+  --xp-text: #0d47a1;
+  --xp-border: #64b5f6;
+  --xp-border-light: #bbdefb;
+  --xp-accent: #1976d2;
+  --xp-accent-light: #42a5f5;
+  --xp-gradient-start: #0a3a8a;
+  --xp-gradient-end: #1976d2;
+  --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
+  --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+  --card-3: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+  --card-4: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+  --card-5: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+  --card-6: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+}
+:root[data-theme="azure"] .unified-header {
+  background:
+    linear-gradient(135deg, rgba(8, 30, 80, 0.45) 0%, rgba(20, 60, 130, 0.35) 100%),
+    url('azure.jpg');
+  background-size: cover, cover;
+  background-position: center, 50% 50%;
+  background-repeat: no-repeat, no-repeat;
+  animation: azure-wave 82s ease-in-out infinite;
+}
+@keyframes azure-wave {
+  0%, 100% { background-position: center, 48% 50%; }
+  50%      { background-position: center, 52% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="azure"] .unified-header { animation: none; }
 }
 
 /* Portal Theme — green nebula */

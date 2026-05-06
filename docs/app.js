@@ -23,7 +23,7 @@ function changeTheme(theme) {
   }
 }
 
-const VALID_THEMES = ['runway', 'deep-space', 'portal', 'cosmic', 'mint'];
+const VALID_THEMES = ['runway', 'deep-space', 'portal', 'cosmic', 'azure'];
 
 // Restore theme on load
 window.addEventListener('load', () => {
