@@ -355,9 +355,9 @@
           <select id="themeSelect" onchange="changeTheme(this.value)">
             <option value="runway" selected>Runway</option>
             <option value="deep-space">Deep Space</option>
+            <option value="portal">Portal</option>
+            <option value="cosmic">Cosmic</option>
             <option value="mint">Mint</option>
-            <option value="forest">Forest</option>
-            <option value="slate">Slate</option>
           </select>
         </label>
         <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)" />
@@ -374,24 +374,24 @@
     <section>
       <h2>Financial Overview <span class="help-icon" role="button" tabindex="0" data-tip="Complete summary of your income, expenses, and savings" aria-label="What is this?">?</span></h2>
       <div class="dashboard-grid">
-        <article class="card">
+        <article class="card card-income">
           <h3>Income</h3>
-          <p id="incomeTotal">$0.00</p>
+          <p><span id="incomeTotal">$0.00</span><span class="period">/ month</span></p>
           <small><span id="yearlyTotal">$0.00</span> / year</small>
         </article>
         <article class="card highlight-card">
           <h3>Income After Expenses</h3>
-          <p id="savingsTotal">$0.00</p>
+          <p><span id="savingsTotal">$0.00</span><span class="period">/ month</span></p>
           <small><span id="annualAfterExpenses">$0.00</span> / year</small>
         </article>
-        <article class="card">
+        <article class="card card-expense">
           <h3>Expenses</h3>
-          <p id="expenseTotal">$0.00</p>
+          <p><span id="expenseTotal">$0.00</span><span class="period">/ month</span></p>
           <small><span id="annualExpenseTotal">$0.00</span> / year</small>
         </article>
         <article class="card highlight-card">
           <h3>Savings</h3>
-          <p id="overviewMonthlySavings">$0.00</p>
+          <p><span id="overviewMonthlySavings">$0.00</span><span class="period">/ month</span></p>
           <small><span id="overviewAnnualSavings">$0.00</span> / year (with gains)</small>
         </article>
       </div>

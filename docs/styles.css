@@ -98,8 +98,8 @@
   --card-6: linear-gradient(135deg, #29b6f6 0%, #0277bd 100%);
 }
 
-/* Forest Theme — earthy green, natural */
-:root[data-theme="forest"] {
+/* Portal Theme — green nebula */
+:root[data-theme="portal"] {
   --xp-bg: #ecf3ec;
   --xp-panel: #ffffff;
   --xp-text: #1b5e20;
@@ -116,24 +116,56 @@
   --card-5: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
   --card-6: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
 }
+:root[data-theme="portal"] .unified-header {
+  background:
+    linear-gradient(135deg, rgba(10, 40, 18, 0.5) 0%, rgba(20, 60, 25, 0.4) 100%),
+    url('portal.jpg');
+  background-size: cover, cover;
+  background-position: center, 50% 50%;
+  background-repeat: no-repeat, no-repeat;
+  animation: portal-wave 80s ease-in-out infinite;
+}
+@keyframes portal-wave {
+  0%, 100% { background-position: center, 48% 50%; }
+  50%      { background-position: center, 52% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="portal"] .unified-header { animation: none; }
+}
 
-/* Slate Theme — modern grey-blue, neutral */
-:root[data-theme="slate"] {
-  --xp-bg: #eceff1;
+/* Cosmic Theme — warm pink/orange nebula */
+:root[data-theme="cosmic"] {
+  --xp-bg: #fdf0f4;
   --xp-panel: #ffffff;
-  --xp-text: #263238;
-  --xp-border: #90a4ae;
-  --xp-border-light: #cfd8dc;
-  --xp-accent: #455a64;
-  --xp-accent-light: #607d8b;
-  --xp-gradient-start: #263238;
-  --xp-gradient-end: #546e7a;
-  --card-1: linear-gradient(135deg, #546e7a 0%, #263238 100%);
+  --xp-text: #ad1457;
+  --xp-border: #f06292;
+  --xp-border-light: #f8bbd0;
+  --xp-accent: #c2185b;
+  --xp-accent-light: #ec407a;
+  --xp-gradient-start: #6a1b4a;
+  --xp-gradient-end: #c2185b;
+  --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
-  --card-3: linear-gradient(135deg, #00838f 0%, #006064 100%);
-  --card-4: linear-gradient(135deg, #00838f 0%, #006064 100%);
-  --card-5: linear-gradient(135deg, #00838f 0%, #006064 100%);
-  --card-6: linear-gradient(135deg, #00838f 0%, #006064 100%);
+  --card-3: linear-gradient(135deg, #ec407a 0%, #ad1457 100%);
+  --card-4: linear-gradient(135deg, #ec407a 0%, #ad1457 100%);
+  --card-5: linear-gradient(135deg, #ec407a 0%, #ad1457 100%);
+  --card-6: linear-gradient(135deg, #ec407a 0%, #ad1457 100%);
+}
+:root[data-theme="cosmic"] .unified-header {
+  background:
+    linear-gradient(135deg, rgba(80, 10, 35, 0.45) 0%, rgba(80, 30, 80, 0.35) 100%),
+    url('cosmic.jpg');
+  background-size: cover, cover;
+  background-position: center, 50% 50%;
+  background-repeat: no-repeat, no-repeat;
+  animation: cosmic-wave 85s ease-in-out infinite;
+}
+@keyframes cosmic-wave {
+  0%, 100% { background-position: center, 50% 50%; }
+  50%      { background-position: center, 53% 47%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="cosmic"] .unified-header { animation: none; }
 }
 
 /* Default fallback (matches runway) */
@@ -312,6 +344,19 @@ section > h2 {
   overflow: hidden;
   text-overflow: clip;
 }
+
+/* "/ month" suffix sits inline with the headline number, smaller and faded */
+.card .period {
+  font-size: 0.45em;
+  font-weight: 600;
+  letter-spacing: 0;
+  opacity: 0.75;
+  margin-left: 4px;
+}
+
+/* Meaningful card colors regardless of grid position */
+.dashboard-grid .card.card-income { background: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%); }
+.dashboard-grid .card.card-expense { background: linear-gradient(135deg, #ef5350 0%, #c62828 100%); }
 
 .card small {
   display: block;
@@ -847,6 +892,30 @@ button:active, .btn:active {
               opacity 0.3s ease;
   will-change: top, left, width, height;
   animation: tour-ring-pulse 1.6s ease-in-out infinite;
+}
+
+/* Big astronaut that drifts in the dim backdrop during the tour */
+.tour-astronaut {
+  position: fixed;
+  width: 110px;
+  height: 110px;
+  z-index: 9050;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.5));
+  animation: tour-astro-float 18s ease-in-out infinite;
+  transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+@keyframes tour-astro-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20%      { transform: translate(22px, -14px) rotate(18deg); }
+  40%      { transform: translate(-18px, 20px) rotate(-12deg); }
+  60%      { transform: translate(28px, 8px) rotate(25deg); }
+  80%      { transform: translate(-12px, -22px) rotate(-18deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-astronaut { animation: none; transition: none; }
 }
 @keyframes tour-ring-pulse {
   0%, 100% { box-shadow: 0 0 0 4px var(--xp-accent-light), 0 0 18px 4px rgba(255,255,255,0.18); }
