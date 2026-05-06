@@ -772,8 +772,58 @@ function startTour() {
 function endTour() {
   tourActive = false;
   removeTourSpotlight();
+  removeTourAstronaut();
   document.getElementById('tourCard')?.remove();
   document.removeEventListener('keydown', tourKeyHandler);
+}
+
+// Big floating astronaut that drifts inside the dim backdrop
+let tourAstronaut = null;
+const TOUR_ASTRO_SIZE = 110;
+
+function ensureTourAstronaut() {
+  if (tourAstronaut) return;
+  tourAstronaut = document.createElement('img');
+  tourAstronaut.src = 'astronaut.png';
+  tourAstronaut.alt = '';
+  tourAstronaut.setAttribute('aria-hidden', 'true');
+  tourAstronaut.className = 'tour-astronaut';
+  document.body.appendChild(tourAstronaut);
+}
+
+function removeTourAstronaut() {
+  if (!tourAstronaut) return;
+  tourAstronaut.remove();
+  tourAstronaut = null;
+}
+
+// Place the astronaut in the largest free dim zone around the cutout
+function positionTourAstronaut(rect) {
+  ensureTourAstronaut();
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const SZ = TOUR_ASTRO_SIZE;
+  const MARGIN = 16;
+
+  if (!rect) {
+    // Full backdrop, no cutout — sit in the upper-left third
+    tourAstronaut.style.left = Math.max(MARGIN, W * 0.18 - SZ / 2) + 'px';
+    tourAstronaut.style.top  = Math.max(MARGIN, H * 0.28 - SZ / 2) + 'px';
+    return;
+  }
+
+  // Try the four surrounding dim zones, pick the one with the most area
+  // that can comfortably hold the astronaut.
+  const zones = [
+    { area: rect.top * W,                     x: W / 2 - SZ / 2,                     y: Math.max(MARGIN, rect.top - SZ - MARGIN) },
+    { area: (H - rect.bottom) * W,            x: W / 2 - SZ / 2,                     y: Math.min(H - SZ - MARGIN, rect.bottom + MARGIN) },
+    { area: rect.left * rect.height,          x: Math.max(MARGIN, rect.left - SZ - MARGIN),    y: rect.top + rect.height / 2 - SZ / 2 },
+    { area: (W - rect.right) * rect.height,   x: Math.min(W - SZ - MARGIN, rect.right + MARGIN), y: rect.top + rect.height / 2 - SZ / 2 }
+  ].filter(z => z.area > SZ * SZ);
+  zones.sort((a, b) => b.area - a.area);
+  const pick = zones[0] || { x: MARGIN, y: MARGIN };
+  tourAstronaut.style.left = Math.max(MARGIN, Math.min(W - SZ - MARGIN, pick.x)) + 'px';
+  tourAstronaut.style.top  = Math.max(MARGIN, Math.min(H - SZ - MARGIN, pick.y)) + 'px';
 }
 
 function tourNext() {
@@ -915,6 +965,7 @@ function renderTour() {
         } else {
           placeTourSpotlight(null);
         }
+        positionTourAstronaut(measuredRect);
         renderTourCard(step, measuredRect);
       }, 40);
     });

@@ -893,6 +893,30 @@ button:active, .btn:active {
   will-change: top, left, width, height;
   animation: tour-ring-pulse 1.6s ease-in-out infinite;
 }
+
+/* Big astronaut that drifts in the dim backdrop during the tour */
+.tour-astronaut {
+  position: fixed;
+  width: 110px;
+  height: 110px;
+  z-index: 9050;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.5));
+  animation: tour-astro-float 18s ease-in-out infinite;
+  transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+@keyframes tour-astro-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20%      { transform: translate(22px, -14px) rotate(18deg); }
+  40%      { transform: translate(-18px, 20px) rotate(-12deg); }
+  60%      { transform: translate(28px, 8px) rotate(25deg); }
+  80%      { transform: translate(-12px, -22px) rotate(-18deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-astronaut { animation: none; transition: none; }
+}
 @keyframes tour-ring-pulse {
   0%, 100% { box-shadow: 0 0 0 4px var(--xp-accent-light), 0 0 18px 4px rgba(255,255,255,0.18); }
   50%      { box-shadow: 0 0 0 6px var(--xp-accent-light), 0 0 28px 10px rgba(255,255,255,0.35); }
