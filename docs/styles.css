@@ -16,6 +16,7 @@
   --xp-accent-light: #7986cb;
   --xp-gradient-start: #0a0e2a;
   --xp-gradient-end: #2a1d50;
+  --xp-body-tint: rgba(63, 81, 181, 0.10);
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
   --card-3: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
@@ -55,6 +56,7 @@
   --xp-accent-light: #9575cd;
   --xp-gradient-start: #1a0b3a;
   --xp-gradient-end: #3d1a6a;
+  --xp-body-tint: rgba(94, 53, 177, 0.11);
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
   --card-3: linear-gradient(135deg, #7e57c2 0%, #4527a0 100%);
@@ -90,6 +92,7 @@
   --xp-accent-light: #42a5f5;
   --xp-gradient-start: #0a3a8a;
   --xp-gradient-end: #1976d2;
+  --xp-body-tint: rgba(25, 118, 210, 0.10);
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
   --card-3: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
@@ -125,6 +128,7 @@
   --xp-accent-light: #66bb6a;
   --xp-gradient-start: #1b5e20;
   --xp-gradient-end: #43a047;
+  --xp-body-tint: rgba(46, 125, 50, 0.10);
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef6c00 0%, #bf360c 100%);
   --card-3: linear-gradient(135deg, #6d4c41 0%, #3e2723 100%);
@@ -160,6 +164,7 @@
   --xp-accent-light: #ec407a;
   --xp-gradient-start: #6a1b4a;
   --xp-gradient-end: #c2185b;
+  --xp-body-tint: rgba(194, 24, 91, 0.10);
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
   --card-3: linear-gradient(135deg, #ec407a 0%, #ad1457 100%);
@@ -195,6 +200,7 @@
   --xp-accent-light: #7986cb;
   --xp-gradient-start: #0a0e2a;
   --xp-gradient-end: #2a1d50;
+  --xp-body-tint: rgba(63, 81, 181, 0.10);
   --card-1: linear-gradient(135deg, #66bb6a 0%, #2e7d32 100%);
   --card-2: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
   --card-3: linear-gradient(135deg, #5c6bc0 0%, #283593 100%);
@@ -209,7 +215,12 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
   color: var(--xp-text);
-  background: var(--xp-bg);
+  background-color: var(--xp-bg);
+  background-image:
+    linear-gradient(var(--xp-body-tint, rgba(255,255,255,0)), var(--xp-body-tint, rgba(255,255,255,0))),
+    url('stars-bg.jpg');
+  background-size: auto, 360px auto;
+  background-repeat: repeat;
   min-height: 100vh;
   padding: 20px;
 }
